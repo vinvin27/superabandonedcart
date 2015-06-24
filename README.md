@@ -19,6 +19,10 @@ Increase your sales easily, creates differents campaings and send automatically 
 - Set up the coupon : Name, code, type (percent/fixe), amount, date valid to
 - Don't forget to setup cron task to send automatically campaing. (Cron are set to check every 30 minutes if abandoned carts have to be on one campaing)
 
+### Prestashop tested version
+
+1.6.0.14
+1.6.X
 
 ### Version
 
