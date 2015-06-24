@@ -37,6 +37,7 @@ On back office > Modules > Add new Module > Upload archive
 
 ### Todo's
 
+- Stasts
 Im sure you have some ideas ?
 
 License
