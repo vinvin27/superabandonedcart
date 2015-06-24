@@ -5,14 +5,6 @@ include(_PS_ROOT_DIR_.'/init.php');
 include_once(dirname(__FILE__).'/classes/Campaign.php');
 
 
-include_once(_PS_SWIFT_DIR_.'Swift.php');
-include_once(_PS_SWIFT_DIR_.'Swift/Connection/SMTP.php');
-include_once(_PS_SWIFT_DIR_.'Swift/Connection/NativeMail.php');
-include_once(_PS_SWIFT_DIR_.'Swift/Plugin/Decorator.php');
-
-
-// @TODO change it ?
-//date_default_timezone_set('Australia/Brisbane');
 
 
 // get abandoned cart :
@@ -120,20 +112,11 @@ foreach( $abandoned_carts as $abncart ) {
 
 
 
-
-//
-
-
-
-
-
-
 function checkIfCartIsOnCampaign( $abndate , $days , $hours ){
 
 
 		
 	// Abandoned cart date + Campaign Days and Hours
-	//echo ' ADD ' . $days . ' JOUR and '  . $hours . ' HEURE '. '<br>';
 	$time = strtotime( $abndate . ' + '.$days.' Days + '.$hours.' hours' );
 	$gAbnDate = date('Y-m-d H:i:s',$time);
 		
@@ -142,18 +125,6 @@ function checkIfCartIsOnCampaign( $abndate , $days , $hours ){
 	$now =  date('Y-m-d H:i:s');
 	$oldnow = date('Y-m-d H:i:s', time() - 60 * 29);
 
-/*
-	echo ' NOW :  ' .date('Y-m-d H:i:s') . '<br>';
-	echo ' CART ABONDONNE AT ' . $abndate. '<br>';;
-	
-	
-	echo ' plus campaign : ' . $gAbnDate . '<br>';
-
-	
-	
-	echo 'MIN TIME ' . $oldnow . '<br>';
-	*/
-	
 	
 	if( strtotime($oldnow) < strtotime($gAbnDate) AND strtotime($gAbnDate) <= strtotime($now) ){
 		return true;
