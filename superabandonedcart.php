@@ -35,7 +35,7 @@ class superabandonedcart extends Module
 	{
 		$this->name = 'superabandonedcart';
 		$this->tab = 'front_office_features';
-		$this->version = '0.0.1';
+		$this->version = '1.0.1';
 		$this->author = 'Vince4digitalife';
 		$this->need_instance = 0;
 		$this->bootstrap = true;
