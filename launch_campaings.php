@@ -12,7 +12,7 @@ include_once(_PS_SWIFT_DIR_.'Swift/Plugin/Decorator.php');
 
 
 // @TODO change it ?
-date_default_timezone_set('Australia/Brisbane');
+//date_default_timezone_set('Australia/Brisbane');
 
 
 // get abandoned cart :
