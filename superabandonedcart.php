@@ -76,8 +76,8 @@ class superabandonedcart extends Module
 	}
 	
 	public function hookDisplayBackOfficeHeader(){
-		 $this->context->controller->addCss($this->_path.'css/tab.css');
-		 $this->context->controller->addJs($this->_path.'js/js.js');
+		 $this->context->controller->addCss($this->_path.'views/css/tab.css');
+		 $this->context->controller->addJs($this->_path.'views/js/js.js');
 	}
 	
 	public function uninstall()
