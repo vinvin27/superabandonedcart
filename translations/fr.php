@@ -1,0 +1,38 @@
+<?php
+
+global $_MODULE;
+$_MODULE = array();
+$_MODULE['<{superabandonedcart}prestashop>superabandonedcart_be53a0541a6d36f6ecb879fa2c584b08'] = 'Photo';
+$_MODULE['<{superabandonedcart}prestashop>superabandonedcart_deb10517653c255364175796ace3553f'] = 'Produit';
+$_MODULE['<{superabandonedcart}prestashop>superabandonedcart_6c957f72dc8cdacc75762f2cbdcdfaf2'] = 'Prix unitaire';
+$_MODULE['<{superabandonedcart}prestashop>superabandonedcart_694e8d1f2ee056f98ee488bdc4982d73'] = 'Quantité';
+$_MODULE['<{superabandonedcart}prestashop>superabandonedcart_96b0141273eabab320119c467cdcaf17'] = 'Total';
+$_MODULE['<{superabandonedcart}prestashop>adminsuperabandonedcart_d3b206d196cd6be3a2764c1fb90b200f'] = 'Supprimer la selection';
+$_MODULE['<{superabandonedcart}prestashop>adminsuperabandonedcart_e25f0ecd41211b01c83e5fec41df4fe7'] = 'Supprimer les campagnes selectionnées';
+$_MODULE['<{superabandonedcart}prestashop>adminsuperabandonedcart_9e791f8358635651cdd972a70e48fdcd'] = 'Campagne n° :';
+$_MODULE['<{superabandonedcart}prestashop>adminsuperabandonedcart_49ee3087348e8d44e1feda1917443987'] = 'Nom';
+$_MODULE['<{superabandonedcart}prestashop>adminsuperabandonedcart_056127be17c14af06be0d7028edb81fe'] = 'Exécuter la selection après combien de jour';
+$_MODULE['<{superabandonedcart}prestashop>adminsuperabandonedcart_8f037a5dc9d5b48c0e651278e1f44284'] = 'Exécuter la selection après combien d\'heure';
+$_MODULE['<{superabandonedcart}prestashop>adminsuperabandonedcart_ec53a8c4f07baed5d8825072c89799be'] = 'Status';
+$_MODULE['<{superabandonedcart}prestashop>adminsuperabandonedcart_d8bd2d150813e8164c7cb859d6708600'] = 'Ne pas oublier de configurer la tache cron pour automatiser le traitement';
+$_MODULE['<{superabandonedcart}prestashop>adminsuperabandonedcart_bb95431f5a1842dced234ba62e63ee3c'] = 'Une copie des emails est envoyées a : ';
+$_MODULE['<{superabandonedcart}prestashop>adminsuperabandonedcart_cb5ed7a30a0ed03c8ac14756bc0bbd30'] = 'Créer une nouvelle campagne';
+$_MODULE['<{superabandonedcart}prestashop>adminsuperabandonedcart_a64def0796a8c01773bb8c5c040fab95'] = 'Nom de la campagne';
+$_MODULE['<{superabandonedcart}prestashop>adminsuperabandonedcart_7932d62341c89358bb1e1c601f2705ec'] = 'Après combien de jour envoyer la campagne';
+$_MODULE['<{superabandonedcart}prestashop>adminsuperabandonedcart_a19c21fc6409e275bc5a32a7b508242b'] = 'Après combien d\'heure envoyer la campagne';
+$_MODULE['<{superabandonedcart}prestashop>adminsuperabandonedcart_c0396d223faf2a81457aa6466881eb8e'] = 'Template de l\'email';
+$_MODULE['<{superabandonedcart}prestashop>adminsuperabandonedcart_a279905a33b0eb83d21fecbedf53122c'] = 'Variable disponible : {firstname} , {lastname} , {coupon_name} , {coupon_code} , {coupon_value} , {coupon_valid_to} , {campaign_name}, {cart_content}';
+$_MODULE['<{superabandonedcart}prestashop>adminsuperabandonedcart_aac7926b4a5826f8eb7620bb5880d5b5'] = 'Inclure un voucher';
+$_MODULE['<{superabandonedcart}prestashop>adminsuperabandonedcart_00d23a76e43b46dae9ec7aa9dcbebb32'] = 'Activé';
+$_MODULE['<{superabandonedcart}prestashop>adminsuperabandonedcart_b9f5c797ebbf55adccdd8539a65a0241'] = 'Désactivé';
+$_MODULE['<{superabandonedcart}prestashop>adminsuperabandonedcart_0bff2febda601534effa81bd0bcdd96c'] = 'Nom du voucher';
+$_MODULE['<{superabandonedcart}prestashop>adminsuperabandonedcart_b0b6ca489716fcef655609b37b31eabd'] = 'Nom du voucher';
+$_MODULE['<{superabandonedcart}prestashop>adminsuperabandonedcart_92dd279998f0a46f84ee923efa05c1b8'] = 'Code du voucher';
+$_MODULE['<{superabandonedcart}prestashop>adminsuperabandonedcart_7254772002d0e9241e9f8e42598c6b4f'] = 'Si vide, le code sera automatiquement généré';
+$_MODULE['<{superabandonedcart}prestashop>adminsuperabandonedcart_41b84d602b8758204de652dbe26d6b1c'] = 'Voucher en pourcentage ou fixe';
+$_MODULE['<{superabandonedcart}prestashop>adminsuperabandonedcart_d030627ba69de90931495cf2a2c81126'] = 'Voucher en pourcentage ou fixe';
+$_MODULE['<{superabandonedcart}prestashop>adminsuperabandonedcart_420085fc060bd82b67c74c41a97a5679'] = 'Valeur du voucher';
+$_MODULE['<{superabandonedcart}prestashop>adminsuperabandonedcart_1d148edbc70585609e44c88c84c13092'] = 'Valeur du voucher';
+$_MODULE['<{superabandonedcart}prestashop>adminsuperabandonedcart_8beb9b53c2b21f07903d74894eced946'] = 'Voucher valide jusqu\'a';
+$_MODULE['<{superabandonedcart}prestashop>adminsuperabandonedcart_c9cc8cce247e49bae79f15173ce97354'] = 'Sauvegarder';
+$_MODULE['<{superabandonedcart}prestashop>adminsuperabandonedcart_9aa03a5dca2e060a4ecbff0dd8616692'] = 'Sauvegarder';
