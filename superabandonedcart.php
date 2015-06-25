@@ -90,7 +90,13 @@ class superabandonedcart extends Module
 				$tab = new Tab($tabid);
 				$tab->delete();
 			}
-        endforeach;
+        	endforeach;
+                $sql = array('DROP table '._DB_PREFIX_.'campaign','DROP table '._DB_PREFIX_.'campaign_shop');
+                
+        	foreach( $sql as $remove )
+			Db::getInstance()->Execute($remove);	
+        	
+        	
 		return parent::uninstall() AND $this->unregisterHook('displayBackOfficeHeader');
 	}
 	
