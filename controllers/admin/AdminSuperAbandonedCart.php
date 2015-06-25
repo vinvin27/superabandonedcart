@@ -422,6 +422,7 @@ class AdminSuperAbandonedCartController extends AdminController {
              
              	$defaultLanguage = new Language((int)(Configuration::get('PS_LANG_DEFAULT')));
              	
+		$campaign = new Campaign($id_campaign);
              	// Include voucher : 
             	
             	if( Tools::getValue('include_voucher') == '1' ){
@@ -454,10 +455,6 @@ class AdminSuperAbandonedCartController extends AdminController {
 						$this->errors[] = Tools::displayError('An error has occured : when saved voucher');
 					}
 				}
-				
-				
-				// Create campaign : 
-				$campaign = new Campaign($id_campaign);
 				
 				$campaign->name = Tools::getValue('name');
 				$campaign->email_tpl = Tools::getValue('email_tpl');
