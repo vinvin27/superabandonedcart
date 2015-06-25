@@ -89,8 +89,8 @@ class AdminSuperAbandonedCartController extends AdminController {
         				<p><b> 30 * * * * '.$cron_url.'</b></p>	
         				<br/>
         				<p><b>'. $this->l('All email send is also send to : ') . Configuration::get('PS_SHOP_EMAIL') .'</b></p>
-        				<p>Don\'t forget to set cron task : </p>
-        				<p><b> 30 * * * * '.$cron_url.'</b></p>	
+        				
+        				
         			</div>';
         return $header . parent::renderList();
     }
@@ -156,6 +156,7 @@ class AdminSuperAbandonedCartController extends AdminController {
                     'required' => true,
                     'class' => 't',
                     'desc' => 'Also mail subject'
+                    
                 ),
                 array(
                     'type' => 'select',
@@ -313,10 +314,6 @@ class AdminSuperAbandonedCartController extends AdminController {
         }
         
         return $extra . parent::renderForm();
-        
-        
-        
-        return parent::renderForm();
     }
     
     
@@ -372,38 +369,7 @@ class AdminSuperAbandonedCartController extends AdminController {
 				
 				}
 			
-                
-        	//if( !Tools::getIsset('voucher_name') OR Tools::isEmpty(Tools::getValue('voucher_name')) ){ $this->errors[] = Tools::displayError('Voucher name can\'t be empty'); }
-           
-            // ADD WAY
-            if ( ( !$id_campaign = (int) Tools::getValue('id_campaign') ) && empty($this->errors) ) {
-            
-            	// Check values for voucher : 
-            	$defaultLanguage = new Language((int)(Configuration::get('PS_LANG_DEFAULT')));
-				$voucher_name = Tools::getValue('voucher_name');
-				$voucher_code = Tools::getValue('voucher_code');
-				$voucher_amount_type = Tools::getValue('voucher_amount_type');
-				$voucher_amount_value = Tools::getValue('voucher_amount_value');
-				$voucher_date = Tools::getValue('voucher_date_to');
 				
-				$new_voucher = new CartRule(null,$defaultLanguage->id);
-				
-				$new_voucher->name = $voucher_name;
-				
-				$new_voucher->date_from = date('Y-m-d');
-				$new_voucher->date_to = $voucher_date;
-				$new_voucher->description = 'Campaign : '.$voucher_name;
-				$new_voucher->code = $voucher_code;
-				$new_voucher->quantity = 1000; // Todo : Update when campaign is lunch to number of concerned people
-				// Si percent : 
-				if( $voucher_amount_type == 'percent' ){
-					$new_voucher->reduction_percent = $voucher_amount_value;
-				} // if fixed amount
-				else{
-					$new_voucher->reduction_amount = $voucher_amount_value;
-				}
-				
-				$new_voucher->save();
 				
 				// Create campaign : 
 				$campaign = new Campaign();
@@ -493,37 +459,6 @@ class AdminSuperAbandonedCartController extends AdminController {
 					}
 				}
 				
-				$voucher_name = Tools::getValue('voucher_name');
-				$voucher_code = Tools::getValue('voucher_code');
-				$voucher_amount_type = Tools::getValue('voucher_amount_type');
-				$voucher_amount_value = Tools::getValue('voucher_amount_value');
-				$voucher_date = Tools::getValue('voucher_date_to');
-				
-				
-				$campaign = new Campaign($id_campaign);
-				
-				$new_voucher = new CartRule($campaign->id_voucher,$defaultLanguage->id);
-				
-				$new_voucher->name = $voucher_name;
-				
-				
-				$new_voucher->date_from = date('Y-m-d');
-				$new_voucher->date_to = $voucher_date;
-				$new_voucher->description = 'Campaign : '.$voucher_name;
-				$new_voucher->code = $voucher_code;
-				$new_voucher->quantity = 1000; // Todo : Update when campaign is lunch to number of concerned people
-				
-				// Si percent : 
-				if( $voucher_amount_type == 'percent' ){
-					$new_voucher->reduction_percent = $voucher_amount_value;
-				} // if fixed amount
-				else{
-					$new_voucher->reduction_amount = $voucher_amount_value;
-				}
-			//	d($new_voucher);
-				if( ! $new_voucher->save() ){
-					$this->errors[] = Tools::displayError('An error has occured : when saved voucher');
-				}
 				
 				// Create campaign : 
 				
@@ -538,6 +473,7 @@ class AdminSuperAbandonedCartController extends AdminController {
 				}else{
 					$campaign->id_voucher = 0;
 				}
+				
 				$campaign->active = Tools::getValue('active');
 				
 				$path = _PS_ROOT_DIR_.'/modules/superabandonedcart/mails/'.$defaultLanguage->iso_code.'/';
@@ -633,29 +569,4 @@ class AdminSuperAbandonedCartController extends AdminController {
         }
 	}
 	
-	
-	
-	/* public function processImageCategory($FILES, $id) {
-        if (isset($FILES['path_img']) && isset($FILES['path_img']['tmp_name']) && !empty($FILES['path_img']['tmp_name'])) {
-            if ($error = ImageManager::validateUpload($FILES['path_img'], 4000000))
-                return Tools::displayError($this->l('Invalid image'));
-            else {
-                $ext = substr($FILES['path_img']['name'], strrpos($FILES['path_img']['name'], '.') + 1);
-                $file_name = 'ban_'.$id . '.' . $ext;
-                $path = _PS_MODULE_DIR_ . 'categoriesbanner/images/' . $file_name;
-                
-                // if file exist (update case)
-                if (file_exists($path)){
-                	unlink($path);
-                }
-                
-                $banner = new Banner($id);
-				$banner->path_img = '/modules/categoriesbanner/images/' . $file_name;
-				$banner->save();
-				if (!move_uploaded_file($FILES['path_img']['tmp_name'], $path))
-                    return Tools::displayError($this->l('An error occurred while attempting to upload the file.'));
-                
-            }
-        }
-    } */
 }
