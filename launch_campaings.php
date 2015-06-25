@@ -4,7 +4,8 @@ include(dirname(__FILE__).'/../../config/config.inc.php');
 include(_PS_ROOT_DIR_.'/init.php');
 include_once(dirname(__FILE__).'/classes/Campaign.php');
 
-
+if (Tools::getValue('secure_key') != Configuration::get('SUPER_AC_SECURE_KEY'))
+	exit;
 //Campaign::sendCampaign();
 
 

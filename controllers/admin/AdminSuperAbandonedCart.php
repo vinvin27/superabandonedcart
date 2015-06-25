@@ -82,7 +82,7 @@ class AdminSuperAbandonedCartController extends AdminController {
         $this->addRowAction('edit');
         $this->addRowAction('delete');
         
-        $cron_url = Tools::getHttpHost(true).'/modules/superabandonedcart/launch_campaings.php';
+        $cron_url = $this->getBaseURL().'/modules/superabandonedcart/launch_campaings.php?secure_key='.Configuration::get('SUPER_AC_SECURE_KEY');;
         
         $header  = '<div class="alert alert-info">
         				<p>  '. $this->l('Don\'t forget to set cron task :') .' </p>
@@ -568,5 +568,13 @@ class AdminSuperAbandonedCartController extends AdminController {
         
         }
 	}
+	
+	// Récupère aussi le dossier si le Shop est dedans
+	public function getBaseURL()
+    	{
+		return (Configuration::get('PS_SSL_ENABLED') ? 'https://' : 'http://')
+			.$this->context->shop->domain.$this->context->shop->getBaseURI();
+    	}
+	
 	
 }
