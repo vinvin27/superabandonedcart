@@ -34,13 +34,8 @@ class superabandonedcart extends Module
 	public function __construct()
 	{
 		$this->name = 'superabandonedcart';
-<<<<<<< HEAD
 		$this->tab = 'checkout';
 		$this->version = '1.1.1';
-=======
-		$this->tab = 'front_office_features';
-		$this->version = '1.0.1';
->>>>>>> 3bc118cb15124b2e0c83671f7268f2be768bd469
 		$this->author = 'Vince4digitalife';
 		$this->need_instance = 0;
 		$this->bootstrap = true;
@@ -82,10 +77,7 @@ class superabandonedcart extends Module
 	
 	public function hookDisplayBackOfficeHeader(){
 		 $this->context->controller->addCss($this->_path.'css/tab.css');
-<<<<<<< HEAD
 		 $this->context->controller->addJs($this->_path.'js/js.js');
-=======
->>>>>>> 3bc118cb15124b2e0c83671f7268f2be768bd469
 	}
 	
 	public function uninstall()
@@ -119,7 +111,6 @@ class superabandonedcart extends Module
         return true;
     }
 
-<<<<<<< HEAD
 	public function getCartContentHeader(){
 		$module = new superabandonedcart();
 		return '<table width="100%">
@@ -134,8 +125,5 @@ class superabandonedcart extends Module
 									</thead>
 									';
 	}
-=======
-	
->>>>>>> 3bc118cb15124b2e0c83671f7268f2be768bd469
 	
 }
