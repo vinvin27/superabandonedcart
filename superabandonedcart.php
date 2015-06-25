@@ -46,7 +46,7 @@ class superabandonedcart extends Module
 	}
 	public function install()
 	{
-
+		Configuration::updateValue('SUPER_AC_SECURE_KEY', md5( _COOKIE_KEY_.time()));
 		$sql = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'campaign` (
 				  `id_campaign` int(11) NOT NULL AUTO_INCREMENT,
 				  `name` varchar(255) NOT NULL,
@@ -82,6 +82,7 @@ class superabandonedcart extends Module
 	
 	public function uninstall()
 	{
+		Configuration::deleteByName('SUPER_AC_SECURE_KEY');
 		$idtabs = array();
 		$idtabs[] = Tab::getIdFromClassName("AdminSuperAbandonedCart");
 		foreach ($idtabs as $tabid):
