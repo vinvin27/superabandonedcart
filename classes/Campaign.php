@@ -60,8 +60,7 @@ class Campaign extends ObjectModel {
 				'required' => true
 			),
 			'voucher_amount_type' => array(
-				'type' => ObjectModel::TYPE_STRING,
-				'required' => true
+				'type' => ObjectModel::TYPE_STRING
 			)
 		)
 	);
