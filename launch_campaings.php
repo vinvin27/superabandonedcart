@@ -132,7 +132,7 @@ public  function sendCampaign(){
 						false, Context::getContext()->shop->id
 					); 	
 					
-					echo 'ID ' . $abncart['id_cart'];
+				//	echo 'ID ' . $abncart['id_cart'];
 			}
 		}
 

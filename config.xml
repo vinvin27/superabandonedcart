@@ -2,10 +2,17 @@
 <module>
 	<name>superabandonedcart</name>
 	<displayName><![CDATA[Super Abandoned Cart]]></displayName>
+<<<<<<< HEAD
 	<version><![CDATA[1.1.1]]></version>
 	<description><![CDATA[Increase your sales thanks to abandoned cart]]></description>
 	<author><![CDATA[Vince4digitalife]]></author>
 	<tab><![CDATA[checkout]]></tab>
+=======
+	<version><![CDATA[1.0.1]]></version>
+	<description><![CDATA[Increase your sales thanks to abandoned cart]]></description>
+	<author><![CDATA[Vince4digitalife]]></author>
+	<tab><![CDATA[front_office_features]]></tab>
+>>>>>>> 3bc118cb15124b2e0c83671f7268f2be768bd469
 	<is_configurable>0</is_configurable>
 	<need_instance>0</need_instance>
 	<limited_countries></limited_countries>
