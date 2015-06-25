@@ -463,7 +463,7 @@ class AdminSuperAbandonedCartController extends AdminController {
 				$campaign->email_tpl = Tools::getValue('email_tpl');
 				$campaign->execution_time_day = Tools::getValue('execution_time_day');
 				$campaign->execution_time_hour = Tools::getValue('execution_time_hour');
-				$campaign->voucher_amount_type = $voucher_amount_type;
+				$campaign->voucher_amount_type = Tools::getValue('voucher_amount_type');
 				
 				if( isset($new_voucher->id) ){
 					$campaign->id_voucher = $new_voucher->id;
