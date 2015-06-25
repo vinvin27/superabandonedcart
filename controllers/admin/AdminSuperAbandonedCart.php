@@ -86,7 +86,7 @@ class AdminSuperAbandonedCartController extends AdminController {
         
         $header  = '<div class="alert alert-info">
         				<p>  '. $this->l('Don\'t forget to set cron task :') .' </p>
-        				<p><b> 30 * * * * '.$cron_url.'</b></p>	
+        				<p><b> */30 * * * * wget -O /dev/null '.$cron_url.'</b></p>	
         				<br/>
         				<p><b>'. $this->l('All email send is also send to : ') . Configuration::get('PS_SHOP_EMAIL') .'</b></p>
         				
@@ -431,10 +431,6 @@ class AdminSuperAbandonedCartController extends AdminController {
 					$voucher_amount_type = Tools::getValue('voucher_amount_type');
 					$voucher_amount_value = Tools::getValue('voucher_amount_value');
 					$voucher_date = Tools::getValue('voucher_date_to');
-				
-				
-					$campaign = new Campaign($id_campaign);
-				
 					$new_voucher = new CartRule($campaign->id_voucher,$defaultLanguage->id);
 				
 					$new_voucher->name = $voucher_name;
@@ -461,12 +457,13 @@ class AdminSuperAbandonedCartController extends AdminController {
 				
 				
 				// Create campaign : 
+				$campaign = new Campaign($id_campaign);
 				
 				$campaign->name = Tools::getValue('name');
 				$campaign->email_tpl = Tools::getValue('email_tpl');
 				$campaign->execution_time_day = Tools::getValue('execution_time_day');
 				$campaign->execution_time_hour = Tools::getValue('execution_time_hour');
-				$campaign->voucher_amount_type = $voucher_amount_type;
+				$campaign->voucher_amount_type = Tools::getValue('voucher_amount_type');
 				
 				if( isset($new_voucher->id) ){
 					$campaign->id_voucher = $new_voucher->id;
