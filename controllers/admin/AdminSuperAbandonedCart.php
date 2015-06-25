@@ -94,27 +94,12 @@ class AdminSuperAbandonedCartController extends AdminController {
         			</div>';
         return $header . parent::renderList();
     }
+	
 	public function initToolbar() {
         parent::initToolbar();
     }
     
 	
-	
-    public function DisplayCategorieById($cats){
-		if(empty($cats)){ return '-'; };
-    	$ids =  explode(',',$cats);
-    	$return = '';
-    	foreach( $ids as $id ){
-    	
-			$id_lang = (int) Context::getContext()->language->id;
-			$cat = new Category($id,$id_lang);
-			$return .= $cat->name . ', ';    	
-    	}
-    	return $return;
-    	
-    	
-    
-	}
 	
 	public function execution_time_day($day){
 		return (empty($day) ? 0 : $day ). ' Day(s)';
@@ -192,7 +177,7 @@ class AdminSuperAbandonedCartController extends AdminController {
                     'class' => 'rte',
                     'autoload_rte' => true,
                     'required' => true,
-                    'desc' => $this->l('Available variables : {firstname} , {lastname} , {coupon_name} , {coupon_code} , {coupon_value} , {coupon_valid_to} , {campaign_name}, {cart_content}')
+					'desc' => $this->l('Available variables : {firstname} , {lastname} , {coupon_name} , {coupon_code} , {coupon_value} , {coupon_valid_to} , {campaign_name}, {cart_content} {track_url} {track_request}')
                 ),
                 array(
                     'type' => 'radio',
@@ -216,19 +201,11 @@ class AdminSuperAbandonedCartController extends AdminController {
                 ),
                 array(
                     'type' => 'text',
-                    'label' => $this->l('Voucher name : '),
-                    'name' => 'voucher_name',
+                    'label' => $this->l('Voucher prefix : '),
+                    'name' => 'voucher_prefix',
                     'size' => 60,
                     'class' => 'voucher_mode',
-                    'desc' => $this->l('Name of the voucher')
-                ),
-                array(
-                    'type' => 'text',
-                    'label' => $this->l('Voucher code : '),
-                    'name' => 'voucher_code',
-                    'size' => 60,
-                    'class' => 'voucher_mode',
-                    'desc' => $this->l('If empty, code will automatically generated.')
+                    'desc' => $this->l('Prefix for the voucher create')
                 ),
                 array(
                     'type' => 'select',
@@ -245,17 +222,17 @@ class AdminSuperAbandonedCartController extends AdminController {
                 array(
                     'type' => 'text',
                     'label' => $this->l('Voucher value : '),
-                    'name' => 'voucher_amount_value',
+                    'name' => 'voucher_amount',
                     'class' => 'voucher_mode',
                     'size' => 60,
                     'desc' => $this->l('Voucher value ?')
                 ),
                 array(
                     'type' => 'text',
-                    'label' => $this->l('Voucher valid to : '),
-                    'name' => 'voucher_date_to',
+                    'label' => $this->l('Voucher valid in day '),
+                    'name' => 'voucher_day',
                     'size' => 60,
-                    'class' => 'datepicker input-medium voucher_mode',
+                    'class' => 'voucher_mode',
                     'desc' => $this->l('If empty, code will automatically generated.')
                 ),
                 array(
@@ -302,7 +279,7 @@ class AdminSuperAbandonedCartController extends AdminController {
         if ($id_campaign = Tools::getValue('id_campaign')){
         	$campaign = new Campaign($id_campaign);
         	// If no voucher disable voucher display only 
-        	if( $campaign->id_voucher ==  0 ){
+        	if( $campaign->voucher_prefix ==  '' ){
         		$extra = '<script> $( function()
         							 { 
         								$("#include_voucher_disable").attr("checked","checked");
@@ -330,44 +307,13 @@ class AdminSuperAbandonedCartController extends AdminController {
                 return false;
            
             // ADD WAY
-            if ( ( !$id_campaign = (int) Tools::getValue('id_campaign') ) && empty($this->errors) ) {
+            if ( ( !$id_campaign = (int) Tools::getValue('id_campaign') ) && empty($this->errors) ) 
+			{
             					
             	$defaultLanguage = new Language((int)(Configuration::get('PS_LANG_DEFAULT')));
 					
             	// Include voucher : 
             	
-            	if( Tools::getValue('include_voucher') == '1' ){
-            	
-					// Check values for voucher : 
-					$voucher_name = Tools::getValue('voucher_name');
-					$voucher_code = Tools::getValue('voucher_code');
-					$voucher_amount_type = Tools::getValue('voucher_amount_type');
-					$voucher_amount_value = Tools::getValue('voucher_amount_value');
-					$voucher_date = Tools::getValue('voucher_date_to');
-				
-				
-					$new_voucher = new CartRule(null,$defaultLanguage->id);
-				
-					$new_voucher->name = $voucher_name;
-				
-					$new_voucher->date_from = date('Y-m-d');
-					$new_voucher->date_to = $voucher_date;
-					$new_voucher->description = 'Campaign : '.$voucher_name;
-					$new_voucher->code = $voucher_code;
-					$new_voucher->quantity = 1000; // Todo : Update when campaign is lunch to number of concerned people
-					
-					// Si percent : 
-					if( $voucher_amount_type == 'percent' ){
-						$new_voucher->reduction_percent = $voucher_amount_value;
-					} // if fixed amount
-					else{
-						$new_voucher->reduction_amount = $voucher_amount_value;
-					}
-					
-					
-					$new_voucher->save();
-				
-				}
 			
 				
 				
@@ -377,12 +323,12 @@ class AdminSuperAbandonedCartController extends AdminController {
 				$campaign->email_tpl = Tools::getValue('email_tpl');
 				$campaign->execution_time_day = Tools::getValue('execution_time_day');
 				$campaign->execution_time_hour = Tools::getValue('execution_time_hour');
+				$campaign->voucher_prefix = Tools::getValue('voucher_prefix');
+				$campaign->voucher_amount = Tools::getValue('voucher_amount');
 				$campaign->voucher_amount_type = Tools::getValue('voucher_amount_type');
-				if( isset($new_voucher->id) ){
-					$campaign->id_voucher = $new_voucher->id;
-				}else{
-					$campaign->id_voucher = 0;
-				}
+				$campaign->voucher_day = Tools::getValue('voucher_day');
+				
+				
 				$campaign->active = Tools::getValue('active');
 				
 				// Create email files :
@@ -414,59 +360,25 @@ class AdminSuperAbandonedCartController extends AdminController {
                 if (!$campaign->save()){
                     $this->errors[] = Tools::displayError('An error has occurred: Can\'t save the current object');
                 }
-                
-                
-                
-            // UPDATE WAY
-            } elseif ($id_campaign = Tools::getValue('id_campaign')) {
+			// UPDATE WAY			
+            } 
+			elseif ($id_campaign = Tools::getValue('id_campaign')) 
+			{
              
-             	$defaultLanguage = new Language((int)(Configuration::get('PS_LANG_DEFAULT')));
-             	
-		$campaign = new Campaign($id_campaign);
-             	// Include voucher : 
-            	
-            	if( Tools::getValue('include_voucher') == '1' ){
+             	$defaultLanguage = new Language((int)(Configuration::get('PS_LANG_DEFAULT')));	
 				
-					$voucher_name = Tools::getValue('voucher_name');
-					$voucher_code = Tools::getValue('voucher_code');
-					$voucher_amount_type = Tools::getValue('voucher_amount_type');
-					$voucher_amount_value = Tools::getValue('voucher_amount_value');
-					$voucher_date = Tools::getValue('voucher_date_to');
-					$new_voucher = new CartRule($campaign->id_voucher,$defaultLanguage->id);
-				
-					$new_voucher->name = $voucher_name;
-				
-				
-					$new_voucher->date_from = date('Y-m-d');
-					$new_voucher->date_to = $voucher_date;
-					$new_voucher->description = 'Campaign : '.$voucher_name;
-					$new_voucher->code = $voucher_code;
-					$new_voucher->quantity = 1000; // Todo : Update when campaign is lunch to number of concerned people
-					
-					// Si percent : 
-					if( $voucher_amount_type == 'percent' ){
-						$new_voucher->reduction_percent = $voucher_amount_value;
-					} // if fixed amount
-					else{
-						$new_voucher->reduction_amount = $voucher_amount_value;
-					}
-				//	d($new_voucher);
-					if( ! $new_voucher->save() ){
-						$this->errors[] = Tools::displayError('An error has occured : when saved voucher');
-					}
-				}
+				// Create campaign : 
+				$campaign = new Campaign($id_campaign);
 				
 				$campaign->name = Tools::getValue('name');
 				$campaign->email_tpl = Tools::getValue('email_tpl');
 				$campaign->execution_time_day = Tools::getValue('execution_time_day');
 				$campaign->execution_time_hour = Tools::getValue('execution_time_hour');
+				$campaign->voucher_prefix = Tools::getValue('voucher_prefix');
+				$campaign->voucher_amount = Tools::getValue('voucher_amount');
 				$campaign->voucher_amount_type = Tools::getValue('voucher_amount_type');
+				$campaign->voucher_day = Tools::getValue('voucher_day');
 				
-				if( isset($new_voucher->id) ){
-					$campaign->id_voucher = $new_voucher->id;
-				}else{
-					$campaign->id_voucher = 0;
-				}
 				
 				$campaign->active = Tools::getValue('active');
 				
@@ -517,18 +429,15 @@ class AdminSuperAbandonedCartController extends AdminController {
             } else
                 $this->errors[] = Tools::displayError('You do not have permission to edit this.');
         }
-        elseif( Tools::getIsset('submitBulkdeletecampaign') && (Tools::getValue('campaignBox')) ){
+        elseif( Tools::getIsset('deletecampaign') &&  Tools::getValue($this->identifier) ) {
         
-        	$ids_banner_deleted = Tools::getValue('campaignBox');
+        	$id_campaign = (int)Tools::getValue($this->identifier);   	
         	
-        	// remove each banner
-        	foreach( $ids_banner_deleted as $id ){
-        	
-        		$b = new Campaign($id);
-        		$b->delete();
-        		unset($b);
+			$b = new Campaign($id_campaign);
+			$b->delete();
+			unset($b);
         		
-        	}
+        	
         
         }
         // Enable selection 
