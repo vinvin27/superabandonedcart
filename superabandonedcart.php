@@ -44,20 +44,34 @@ class superabandonedcart extends Module
 		$this->description = $this->l('Increase your sales thanks to abandoned cart');
 		$this->ps_versions_compliancy = array('min' => '1.6', 'max' => _PS_VERSION_);
 	}
+	
 	public function install()
 	{
 		Configuration::updateValue('SUPER_AC_SECURE_KEY', md5( _COOKIE_KEY_.time()));
+		
 		$sql = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'campaign` (
 				  `id_campaign` int(11) NOT NULL AUTO_INCREMENT,
 				  `name` varchar(255) NOT NULL,
+				  `voucher_prefix` varchar(50) NOT NULL,
+				  `voucher_amount` varchar(50) NOT NULL,
 				  `voucher_amount_type` varchar(50) NOT NULL,
+				  `voucher_day` varchar(50) NOT NULL,
 				  `email_tpl` text NOT NULL,
 				  `execution_time_day` int(11) NOT NULL,
   				  `execution_time_hour` int(11) NOT NULL,
-				  `id_carts` varchar(255) NOT NULL,
-				  `id_voucher` int(11) NOT NULL,
 				  `active` tinyint(1) NOT NULL,
 				  PRIMARY KEY (`id_campaign`)
+				) ENGINE=InnoDB;
+				
+				CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'campaign_history` (
+				  `id_campaign_history` int(11) NOT NULL AUTO_INCREMENT,
+				  `id_customer` int(11) NOT NULL ,
+				  `id_cart` int(11) NOT NULL,
+				  `id_cart_rule` int(11) NOT NULL,
+				  `click` int(1) NOT NULL,
+				  `converted` int(1) NOT NULL,
+				  `date_update` datetime, 	
+				  PRIMARY KEY (`id_campaign_history`)
 				) ENGINE=InnoDB ;
 				
 			CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'campaign_shop` (
@@ -75,9 +89,10 @@ class superabandonedcart extends Module
 		return true;
 	}
 	
-	public function hookDisplayBackOfficeHeader(){
-		 $this->context->controller->addCss($this->_path.'views/css/tab.css');
-		 $this->context->controller->addJs($this->_path.'views/js/js.js');
+	public function hookDisplayBackOfficeHeader()
+	{
+		$this->context->controller->addCss($this->_path.'views/css/tab.css');
+		$this->context->controller->addJs($this->_path.'views/js/js.js');
 	}
 	
 	public function uninstall()
@@ -90,19 +105,18 @@ class superabandonedcart extends Module
 				$tab = new Tab($tabid);
 				$tab->delete();
 			}
-        	endforeach;
-                $sql = array('DROP table '._DB_PREFIX_.'campaign','DROP table '._DB_PREFIX_.'campaign_shop');
-                
-        	foreach( $sql as $remove )
-			Db::getInstance()->Execute($remove);	
-        	
-        	
+        endforeach;
+        
+        $sql = array('DROP table '._DB_PREFIX_.'campaign','DROP table '._DB_PREFIX_.'campaign_shop');
+        
+        foreach( $sql as $remove )
+        Db::getInstance()->Execute($remove);
+        
 		return parent::uninstall() AND $this->unregisterHook('displayBackOfficeHeader');
-	}
+	}	
 	
-	
-	
-	 private function CreateTabs() {
+	private function CreateTabs() 
+	{
         $langs = Language::getLanguages();
         $id_lang = (int) Configuration::get('PS_LANG_DEFAULT');
         $smarttab = new Tab();
@@ -117,8 +131,60 @@ class superabandonedcart extends Module
       
         return true;
     }
+	
+	public function hookDisplayHeader()
+	{
+		
+		if( Tools::getValue('id_customer') && Tools::getValue('id_cart') )
+		{
 
-	public function getCartContentHeader(){
+			$sql = 'UPDATE `'._DB_PREFIX_.'campaign_history` SET click = 1 WHERE id_customer = '.(int)Tools::getValue('id_customer').' AND id_cart = '.(int)Tools::getValue('id_cart').' ';
+			Db::getInstance()->Execute($sql);			
+			
+		}		
+		
+	}
+	
+	
+	public function hookdisplayAdminOrder()
+	{
+  
+		$id_order = Tools::getValue('id_order');
+		$token = Tools::getAdminTokenLite('AdminOrders');
+		$commande = new Order($id_order);
+		$order_cart_rule = $commande->getCartRules();
+		
+		if( count($order_cart_rule) > 0) {
+		
+			// Est ce on veut exatement le même numéro de panier ?
+			//AND `id_cart` = '.(int)$commande->id_cart.' 
+			
+			$sql = 'SELECT * FROM `'._DB_PREFIX_.'campaign_history` WHERE 
+			`id_customer` = '.(int)$commande->id_customer.' 			
+			AND `id_cart_rule` = '.(int)$order_cart_rule[0]['id_cart_rule'].' ';
+			$voucher = Db::getInstance()->getRow($sql);						
+			
+			if( $voucher  ) {
+				
+				echo '
+				<!-- Commande en cours. -->
+				<div class="panel">
+				<div class="panel-heading"><i class="icon-money"></i>'.$this->l('Relance panier').'</div>
+				<div class="table-responsive">';
+					
+				echo '<table class="table" >			
+				Bravo la commande vient d\'une relance panier <br/>
+				Numéro de campagne : <b>'.$voucher['id_campaign'].'</b/>
+				</table>
+				</div></div>';
+				
+			}
+		}
+	}
+	
+
+	public function getCartContentHeader()
+	{
 		$module = new superabandonedcart();
 		return '<table width="100%">
 									<thead>

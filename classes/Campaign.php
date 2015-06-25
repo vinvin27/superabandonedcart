@@ -10,18 +10,12 @@ class Campaign extends ObjectModel {
 	public $email_tpl;
 	public $execution_time_day;
 	public $execution_time_hour;
-	public $id_carts;
-	public $id_voucher;
 	public $active;
-	
-	// extra fields from cart Rule :
-	public $voucher_name;
-	public $voucher_code;
+	//Extra Field for Create Voucher
+	public $voucher_prefix;
+	public $voucher_day;
 	public $voucher_amount_type;
-	public $voucher_amount_value;
-	public $voucher_date_to;
-	
-	
+	public $voucher_amount;	
 	
 	public static $definition = array(
 	
@@ -30,8 +24,7 @@ class Campaign extends ObjectModel {
 		'multilang' => false,
 		'fields' => array(
 			'id_campaign' => array(
-				'type' => ObjectModel::TYPE_INT
-				
+				'type' => ObjectModel::TYPE_INT				
 			),
 			'name' => array(
 				'type' => ObjectModel::TYPE_STRING,
@@ -49,18 +42,21 @@ class Campaign extends ObjectModel {
 				'type' => ObjectModel::TYPE_INT,
 				'required' => true
 			),
-			'id_carts' => array(
+			'voucher_prefix' => array(
 				'type' => ObjectModel::TYPE_STRING
 			),
-			'id_voucher' => array(
+			'voucher_day' => array(
 				'type' => ObjectModel::TYPE_INT
+			),
+			'voucher_amount_type' => array(
+				'type' => ObjectModel::TYPE_STRING
+			),
+			'voucher_amount' => array(
+				'type' => ObjectModel::TYPE_STRING
 			),
 			'active' => array(
 				'type' => ObjectModel::TYPE_BOOL,
 				'required' => true
-			),
-			'voucher_amount_type' => array(
-				'type' => ObjectModel::TYPE_STRING
 			)
 		)
 	);
@@ -68,24 +64,8 @@ class Campaign extends ObjectModel {
 	// Override construct to link object to voucher object fields
 	public function __construct($id = null, $id_lang = null, $id_shop = null)
 	{
-		parent::__construct($id,$id_lang,$id_shop);
-		
-		// language @Todo manage language
-		$defaultLanguage = new Language((int)(Configuration::get('PS_LANG_DEFAULT')));
-		
-		$cr = new CartRule($this->id_voucher,$defaultLanguage->id);
-		
-		$this->voucher_date_to = ( !empty($cr->date_to) ? date('Y-m-d',strtotime($cr->date_to)) : '');
-		$this->voucher_name = $cr->name;
-		$this->voucher_code = $cr->code;
-		
-		if( $this->voucher_amount_type == 'percent' ) {
-			$this->voucher_amount_value = $cr->reduction_percent;
-		}
-		else{
-			$this->voucher_amount_value = $cr->reduction_amount;
-		}
-		
+		parent::__construct($id,$id_lang,$id_shop);	
+	
 	}
 	
 	
@@ -105,8 +85,67 @@ class Campaign extends ObjectModel {
 	}
 	
 	public function getCartContentHeader(){
+		
 		$module = new superabandonedcart();
 		return $module->getCartContentHeader();
+		
 	}
+	
+	public function registerDiscount($id_customer,$amount,$day,$type,$name)
+	{	
+		
+		$languages = Language::getLanguages(false);
+		
+		$cartRule = new CartRule();
+		
+		if( $type == 'percent'  )
+			$cartRule->reduction_percent = $amount;
+		else
+			$cartRule->reduction_amount= $amount;
+		
+		$cartRule->quantity = 1;
+		$cartRule->quantity_per_user = 1;
+		$cartRule->date_from = date('Y-m-d H:i:s', time());
+		$cartRule->date_to = date('Y-m-d H:i:s', time() + 86000*$day );
+		//$cartRule->minimum_amount = ''; // Utile ?
+		$cartRule->minimum_amount_tax = true;
+		$cartRule->code = $name.'_'.Tools::passwdGen(6);
+		// QUESTION ? 
+		// It does not work if I do not use languages but it works with the referalprogam module (Prestashop Module)
+		foreach ($languages as $lang) {
+			
+			$cartRule->name[$lang['id_lang']] = $name.' ID :'.$id_customer;
+		
+		}
+		$cartRule->id_customer = (int)$id_customer;
+		$cartRule->reduction_tax = true;
+		$cartRule->highlight = 1;
+
+
+		if ( $cartRule->add() )
+			return $cartRule;
+
+		return false;
+	}
+	
+	public function clean_old_reduction($prefix) 
+	{		
+	
+		$sql = "DELETE FROM `"._DB_PREFIX_."cart_rule` WHERE code LIKE  '".$prefix."%' AND  date_to < '".date('Y-m-d H:i:s')."' AND quantity = 1";
+	
+		if( Db::getInstance()->Execute( $sql ) )
+			
+			return true;
+		
+		else
+		
+			return false;	 
+	
+	}	
+	
+	
+	
+	
+	
 	
 }
