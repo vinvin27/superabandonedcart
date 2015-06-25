@@ -140,7 +140,7 @@ class AdminSuperAbandonedCartController extends AdminController {
     	
     	}
     	
-    	$voucher_type[] = array( 'voucher_type' => 'fixe', 'name'=> 'Fixe');
+    	$voucher_type[] = array( 'voucher_type' => 'fixe', 'name'=> 'Fixed');
     	$voucher_type[] = array( 'voucher_type' => 'percent', 'name' => 'Percent');
     	
     	
