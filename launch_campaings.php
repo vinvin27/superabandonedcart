@@ -1,7 +1,6 @@
 <?php
-	@ini_set('display_errors', 'on');
-	@error_reporting(E_ALL | E_STRICT);
-
+// Set true for debug $days = 0 
+define('DEBUG_SAC',false);
 
 include(dirname(__FILE__).'/../../config/config.inc.php');
 include(_PS_ROOT_DIR_.'/init.php');
@@ -51,12 +50,16 @@ class LaunchCampaign
 
 			// loop on all available campaigns 
 			foreach( $allCampaigns as $camp ) {
+				
+				if( DEBUG_SAC )
+				echo 'IdCustomer : '.$abncart['id_customer'].' - IdCart : '.$abncart['id_cart'].'<br/>';
 			
 				$cartIsOnCampaign = $this->checkIfCartIsOnCampaign( $abncart['date_add'] , $camp['execution_time_day'] , $camp['execution_time_hour']);
 			
-				//echo 'IdCustomer : '.$abncart['id_customer'].' - IdCart : '.$abncart['id_cart'].'<br>';
-			
 				if( $cartIsOnCampaign ){
+					
+					if( DEBUG_SAC )
+					echo 'Cart on campaign</br>';
 			
 					$id_lang = (int) Configuration::get('PS_LANG_DEFAULT');
 					$customer = new Customer($abncart['id_customer']);
@@ -178,6 +181,10 @@ class LaunchCampaign
 	public function checkIfCartIsOnCampaign( $abndate , $days , $hours )
 	{	
 		
+		// Set days = 0 for debug
+		if( DEBUG_SAC )
+			$days = 0;
+		
 		// Abandoned cart date + Campaign Days and Hours
 		$time = strtotime( $abndate . ' + '.$days.' Days + '.$hours.' hours' );
 		$gAbnDate = date('Y-m-d H:i:0',$time);
@@ -194,7 +201,10 @@ class LaunchCampaign
 		echo ' CART ABONDONNE AT ' . $abndate. '<br>';;
 		echo ' plus campaign : ' . $gAbnDate . '<br>';
 		echo 'MIN TIME ' . $oldnow . '<br>';
-		*/				
+		*/
+		
+		if( DEBUG_SAC )
+			echo $oldnow.' < '.$gAbnDate.' ---- '.$gAbnDate.' <= '.$now.'<br/><br/>';
 		
 		if( strtotime($oldnow) < strtotime($gAbnDate) AND strtotime($gAbnDate) <= strtotime($now) ) {
 			
