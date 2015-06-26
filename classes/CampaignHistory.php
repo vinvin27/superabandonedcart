@@ -58,4 +58,12 @@ class CampaignHistory extends ObjectModel {
 	
 	}
 	
+	public static function getHistory()
+	{
+		
+		$sql  = 'SELECT * FROM `'._DB_PREFIX_.'campaign_history` ORDER BY id_campaign_history DESC';
+		return (Db::getInstance()->executeS($sql));
+		
+	}
+	
 }
