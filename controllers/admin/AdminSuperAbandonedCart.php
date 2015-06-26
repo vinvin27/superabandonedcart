@@ -115,12 +115,12 @@ class AdminSuperAbandonedCartController extends AdminController {
     	$id_lang = (int) Context::getContext()->language->id;
     	$categories = Category::getSimpleCategories($id_lang);
     	$array_day = $voucher_type = $array_hour = array();
-    	for($i=0 ; $i<32 ; $i++){
+    	for($i=1 ; $i<32 ; $i++){
     		$array_day[] = array( 'id_day' => $i , 'name' => $i.' Days' );
     	
     	}
     	
-        for($i=0 ; $i<25 ; $i++){
+        for($i=1 ; $i<25 ; $i++){
     		$array_hour[] = array( 'id_hour' => $i , 'name' => $i.' Hours' );
     	
     	}
@@ -177,7 +177,7 @@ class AdminSuperAbandonedCartController extends AdminController {
                     'class' => 'rte',
                     'autoload_rte' => true,
                     'required' => true,
-					'desc' => $this->l('Available variables : {firstname} , {lastname} , {coupon_name} , {coupon_code} , {coupon_value} , {coupon_valid_to} , {campaign_name}, {cart_content} {track_url} {track_request}')
+					'desc' => $this->l('Available variables : {firstname} , {lastname} , {coupon_name} , {coupon_code} , {coupon_value} , {coupon_valid_to} , {campaign_name}, {cart_content} , {track_url} , {track_request}')
                 ),
                 array(
                     'type' => 'radio',
@@ -229,11 +229,11 @@ class AdminSuperAbandonedCartController extends AdminController {
                 ),
                 array(
                     'type' => 'text',
-                    'label' => $this->l('Voucher valid in day '),
+                    'label' => $this->l('Voucher valid in day :'),
                     'name' => 'voucher_day',
                     'size' => 60,
                     'class' => 'voucher_mode',
-                    'desc' => $this->l('If empty, code will automatically generated.')
+                    'desc' => $this->l('How many days voucher will be valid? ')
                 ),
                 array(
                     'type' => 'radio',

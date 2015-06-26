@@ -87,8 +87,6 @@ class LaunchCampaign
 						$images = Image::getImages((int)$id_lang, (int)$p->id);
 					
 						$link = new Link();
-						echo Tools::getShopProtocol().$link->getImageLink($p->link_rewrite,$images[0]['id_image']).'<br/>';
-						
 						$cart_content .= '<tr>
 											<td align="center" ><img src="'.Tools::getShopProtocol().$link->getImageLink($p->link_rewrite,$images[0]['id_image']).'" width="80"/></td>
 											<td align="center" ><a href="'.$link->getProductLink($p).'?id_cart='.(int)$abncart['id_cart'].'&id_customer='.(int)$abncart['id_customer'].'"/>'.$p->name.'</a></td>
@@ -107,7 +105,7 @@ class LaunchCampaign
 						'{coupon_name}' => $customerVoucher->name,
 						'{coupon_code}' => $customerVoucher->code,
 						'{cart_content}' => $cart_content,
-						'{coupon_value}' => ( $camp['voucher_amount_type'] == 'percent' ? $customerVoucher->reduction_percent.'%' :  $currency.$customerVoucher->reduction_amount ),
+						'{coupon_value}' => ( $camp['voucher_amount_type'] == 'percent' ? $customerVoucher->reduction_percent.'%' :  Tools::displayprice($customerVoucher->reduction_amount) ),
 						'{coupon_valid_to}' => date('d/m/Y',strtotime( $customerVoucher->date_to )),
 						'{campaign_name}' => $camp['name'],
 						'{track_url}' => $this->getBaseURL().'?id_cart='.(int)$abncart['id_cart'].'&id_customer='.(int)$abncart['id_customer'],
@@ -145,13 +143,12 @@ class LaunchCampaign
 					
 					// Email to admin :
 					
-					/*
 					Mail::Send(
 							$id_lang ,
 							$campM->getFileName() ,
 							Mail::l( sprintf('Email sent to %s %s for campaign %s' , $customer->lastname , $customer->firstname , $camp['name'] )) , 
 							$tpl_vars ,
-							'okom3pom@free.fr' ,
+							Configuration::get('PS_SHOP_EMAIL') ,
 							null,
 							null,
 							null,
@@ -159,7 +156,8 @@ class LaunchCampaign
 							null,
 							$path,
 							false, Context::getContext()->shop->id
-						); 	*/
+						); 	
+						
 						
 					//	echo 'ID ' . $abncart['id_cart'];
 				}
@@ -180,12 +178,12 @@ class LaunchCampaign
 		
 		// Abandoned cart date + Campaign Days and Hours
 		$time = strtotime( $abndate . ' + '.$days.' Days + '.$hours.' hours' );
-		$gAbnDate = date('Y-m-d H:i:s',$time);
+		$gAbnDate = date('Y-m-d H:i:0',$time);
 		
 		// Now time ( cron should be fired every 30minutes (e.g : at 2 or 2:30 or 3 or 3:30...) so
 		// for 0 min check last 29mins (from 0 to 31mins) and for 30 check last 29mins (from 30 to 01);
-		$now =  date('Y-m-d H:i:s');
-		$oldnow = date('Y-m-d H:i:s', time() - 60 * 29);
+		$now =  date('Y-m-d H:i:0');
+		$oldnow = date('Y-m-d H:i:0', time() - 60 * 29);
 	
 		// Debug 
 		/*

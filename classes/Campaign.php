@@ -109,7 +109,8 @@ class Campaign extends ObjectModel {
 		$cartRule->date_to = date('Y-m-d H:i:s', time() + 86000*$day );
 		//$cartRule->minimum_amount = ''; // Utile ?
 		$cartRule->minimum_amount_tax = true;
-		$cartRule->code = $name.'_'.Tools::passwdGen(6);
+		//$cartRule->code = $name.'_'.Tools::passwdGen(6);
+		$cartRule->code = $name;
 		// QUESTION ? 
 		// It does not work if I do not use languages but it works with the referalprogam module (Prestashop Module)
 		foreach ($languages as $lang) {

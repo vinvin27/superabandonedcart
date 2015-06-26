@@ -65,6 +65,7 @@ class superabandonedcart extends Module
 				
 				CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'campaign_history` (
 				  `id_campaign_history` int(11) NOT NULL AUTO_INCREMENT,
+				  `id_campaign` int(11) NOT NULL ,
 				  `id_customer` int(11) NOT NULL ,
 				  `id_cart` int(11) NOT NULL,
 				  `id_cart_rule` int(11) NOT NULL,
