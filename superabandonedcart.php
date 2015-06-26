@@ -85,7 +85,7 @@ class superabandonedcart extends Module
 		
 		$this->CreateTabs();
 		
-		if (!parent::install() OR !$this->registerHook('displayBackOfficeHeader'))
+		if (!parent::install() || !$this->registerHook('displayBackOfficeHeader') || !$this->registerHook('displayHeader') || !$this->registerHook('displayAdminOrder') )
 			return false;
 		return true;
 	}
@@ -108,12 +108,12 @@ class superabandonedcart extends Module
 			}
         endforeach;
         
-        $sql = array('DROP table '._DB_PREFIX_.'campaign','DROP table '._DB_PREFIX_.'campaign_shop');
+        $sql = array('DROP table '._DB_PREFIX_.'campaign','DROP table '._DB_PREFIX_.'campaign_history','DROP table '._DB_PREFIX_.'campaign_shop');
         
         foreach( $sql as $remove )
         Db::getInstance()->Execute($remove);
         
-		return parent::uninstall() AND $this->unregisterHook('displayBackOfficeHeader');
+		return parent::uninstall() AND $this->unregisterHook('displayBackOfficeHeader') && $this->unregisterHook('displayHeader') && $this->unregisterHook('displayAdminOrder') ;
 	}	
 	
 	private function CreateTabs() 
