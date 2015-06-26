@@ -63,6 +63,15 @@ class LaunchCampaign
 					$cart = new Cart($abncart['id_cart']);			
 					$products = $cart->getProducts();
 				
+				
+					$tpl_vars = array(
+						'{firstname}' => $customer->firstname,
+						'{lastname}' => $customer->lastname,
+						'{campaign_name}' => $camp['name'],
+						'{track_url}' => $this->getBaseURL().'?id_cart='.(int)$abncart['id_cart'].'&id_customer='.(int)$abncart['id_customer'],
+						'{track_request}' => '?id_cart='.(int)$abncart['id_cart'].'&id_customer='.(int)$abncart['id_customer']
+					);
+				
 					$campM = new Campaign($camp['id_campaign']);			
 					
 					if( $campM->voucher_amount && $campM->voucher_day && $campM->voucher_amount_type ) {
@@ -70,6 +79,10 @@ class LaunchCampaign
 						$campM->clean_old_reduction($campM->voucher_prefix);
 						$customerVoucher = $campM->registerDiscount($customer->id,$campM->voucher_amount ,$campM->voucher_day,$campM->voucher_amount_type,$campM->voucher_prefix);
 					
+						$tpl_vars['{coupon_name}'] = $customerVoucher->name;
+						$tpl_vars['{coupon_code}'] = $customerVoucher->code;
+						$tpl_vars['{coupon_value}'] = ( $camp['voucher_amount_type'] == 'percent' ? $customerVoucher->reduction_percent.'%' :  Tools::displayprice($customerVoucher->reduction_amount) );
+						$tpl_vars['{coupon_valid_to}'] = date('d/m/Y',strtotime( $customerVoucher->date_to ));
 					}	
 						
 					if (! empty( $products ) ) {	
@@ -99,19 +112,8 @@ class LaunchCampaign
 					
 					$cart_content .= '</table>';
 					
-					$tpl_vars = array(
-						'{firstname}' => $customer->firstname,
-						'{lastname}' => $customer->lastname,
-						'{coupon_name}' => $customerVoucher->name,
-						'{coupon_code}' => $customerVoucher->code,
-						'{cart_content}' => $cart_content,
-						'{coupon_value}' => ( $camp['voucher_amount_type'] == 'percent' ? $customerVoucher->reduction_percent.'%' :  Tools::displayprice($customerVoucher->reduction_amount) ),
-						'{coupon_valid_to}' => date('d/m/Y',strtotime( $customerVoucher->date_to )),
-						'{campaign_name}' => $camp['name'],
-						'{track_url}' => $this->getBaseURL().'?id_cart='.(int)$abncart['id_cart'].'&id_customer='.(int)$abncart['id_customer'],
-						'{track_request}' => '?id_cart='.(int)$abncart['id_cart'].'&id_customer='.(int)$abncart['id_customer']
-					);
-				
+					$tpl_vars['{cart_content}'] = $cart_content;
+
 				
 					$path = _PS_ROOT_DIR_.'/modules/superabandonedcart/mails/';
 					// send email to customer : 
@@ -135,7 +137,7 @@ class LaunchCampaign
 						$history->id_campaign= (int)$camp['id_campaign'];
 						$history->id_customer = $abncart['id_customer'];
 						$history->id_cart = $abncart['id_cart'];
-						$history->id_cart_rule =$customerVoucher->id;
+						$history->id_cart_rule = ( isset($customerVoucher->id) ? $customerVoucher->id : 0);
 						$history->click = 0;
 						$history->converted = 0;
 						$history->date_update = date('Y-m-d H:i:s', time());
