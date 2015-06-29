@@ -35,8 +35,8 @@ class superabandonedcart extends Module
 	{
 		$this->name = 'superabandonedcart';
 		$this->tab = 'checkout';
-		$this->version = '1.1.4';
-		$this->author = 'Vince4digitalife';
+		$this->version = '1.1.5';
+		$this->author = 'Vince';
 		$this->need_instance = 0;
 		$this->bootstrap = true;
 		parent::__construct();
