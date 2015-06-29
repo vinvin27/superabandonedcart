@@ -23,6 +23,12 @@ Increase your sales easily, creates differents campaings and send automatically 
 
 You can easily change all wording/text with translation menu on back-office.
 
+### Emails example :
+
+(Don't forget to change all links in the mail)
+
+http://pastie.org/10257451
+
 ### Prestashop tested version
 
 1.6.0.14
@@ -30,7 +36,7 @@ You can easily change all wording/text with translation menu on back-office.
 
 ### Version
 
-0.0.1
+1.1.5
 
 ### Installation
 
@@ -42,7 +48,8 @@ On back office > Modules > Add new Module > Upload archive
 ### Todo's
 
 - Stasts
-Im sure you have some ideas ?
+- Compatibility with Prestashop < 1.6.X
+- Im sure you have some ideas ?
 
 License
 ----
