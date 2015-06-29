@@ -1,5 +1,6 @@
 <?php
 require_once (dirname(__FILE__) . '/../../classes/Campaign.php');
+require_once (dirname(__FILE__) . '/../../classes/CampaignHistory.php');
 
 class AdminSuperAbandonedCartController extends AdminController {
 
@@ -91,7 +92,7 @@ class AdminSuperAbandonedCartController extends AdminController {
         				
         				
         			</div>';
-        return $header . parent::renderList();
+        return $header . parent::renderList() . $this->renderHistoryList();
     }
 	
 	public function initToolbar() {
@@ -469,6 +470,63 @@ class AdminSuperAbandonedCartController extends AdminController {
         	}
         
         }
+	}
+	
+	public function renderHistoryList()
+	{
+		
+		$module = new superabandonedcart();
+
+		$historyList = CampaignHistory::getHistory();
+		$fields_list = $this->getStandardFieldList();
+
+		$helper = new HelperList();
+		$helper->shopLinkType = '';
+		$helper->simple_header = true;
+		//$helper->actions = array('delete');
+		$helper->show_toolbar = false;
+		//$helper->module = $module;
+		$helper->listTotal = count($historyList);
+		$helper->identifier = 'id_campaign_history';
+		$helper->title = $this->l('Cart Stats History');
+		$helper->table = $module->name;
+		$helper->token = Tools::getAdminTokenLite('AdminSuperAbandonedCart');
+		$helper->currentIndex = AdminController::$currentIndex;
+
+
+		return $helper->generateList($historyList, $fields_list);
+	}
+	
+	public function getStandardFieldList()
+	{
+		return array(
+			'id_campaign_history' => array(
+				'title' => $this->l('ID'),
+				'type' => 'text',
+			),
+			'id_customer' => array(
+				'title' => $this->l('Customer ID'),
+				'type' => 'text',
+			),
+			'id_cart' => array(
+				'title' => $this->l('Cart ID'),
+				'type' => 'text',
+			),
+			'id_campaign' => array(
+				'title' => $this->l('Campaign ID'),
+				'type' => 'text',
+			),
+			'click' => array(
+				'title' => $this->l('Cliked'),
+				'active' => 'click',
+                'type' => 'bool',
+			),
+			'converted' => array(
+				'title' => $this->l('Converted'),
+				'active' => 'converted',
+                'type' => 'bool',
+			),
+		);
 	}
 	
 	// Récupère aussi le dossier si le Shop est dedans
