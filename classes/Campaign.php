@@ -70,7 +70,8 @@ class Campaign extends ObjectModel {
 	
 	
 	public function getFileName($ext = ''){
-		$tpl_file_name = $this->name;
+		// Avoid name with speciaux characters 
+		$tpl_file_name = strtolower(preg_replace("/[^A-Za-z0-9]/","",$this->name));
 		$except = array('\\', '/', ':', '*', '?', '"', '<', '>', '|',' '); 
 		$tpl_file_name = strtolower(str_replace($except, '', $tpl_file_name)); 
 		$unwanted_array = array(    'Š'=>'S', 'š'=>'s', 'Ž'=>'Z', 'ž'=>'z', 'À'=>'A', 'Á'=>'A', 'Â'=>'A', 'Ã'=>'A', 'Ä'=>'A', 'Å'=>'A', 'Æ'=>'A', 'Ç'=>'C', 'È'=>'E', 'É'=>'E',
@@ -109,13 +110,13 @@ class Campaign extends ObjectModel {
 		$cartRule->date_to = date('Y-m-d H:i:s', time() + 86000*$day );
 		//$cartRule->minimum_amount = ''; // Utile ?
 		$cartRule->minimum_amount_tax = true;
-		//$cartRule->code = $name.'_'.Tools::passwdGen(6);
-		$cartRule->code = $name;
+		$cartRule->code = $name.'_'.strtoupper(Tools::passwdGen(6));
+		//$cartRule->code = $name;
 		// QUESTION ? 
 		// It does not work if I do not use languages but it works with the referalprogam module (Prestashop Module)
 		foreach ($languages as $lang) {
 			
-			$cartRule->name[$lang['id_lang']] = $name.' ID :'.$id_customer;
+			$cartRule->name[$lang['id_lang']] = $name.' Customer ID :'.$id_customer;
 		
 		}
 		$cartRule->id_customer = (int)$id_customer;

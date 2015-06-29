@@ -47,7 +47,10 @@ class superabandonedcart extends Module
 	
 	public function install()
 	{
-		Configuration::updateValue('SUPER_AC_SECURE_KEY', md5( _COOKIE_KEY_.time()));
+		// If SECURE KEY doesn't exist  
+		if( !Configuration::get('SUPER_AC_SECURE_KEY') ) {
+			Configuration::updateValue('SUPER_AC_SECURE_KEY', md5( _COOKIE_KEY_.time()));
+		}
 		
 		$sql = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'campaign` (
 				  `id_campaign` int(11) NOT NULL AUTO_INCREMENT,
@@ -98,7 +101,6 @@ class superabandonedcart extends Module
 	
 	public function uninstall()
 	{
-		Configuration::deleteByName('SUPER_AC_SECURE_KEY');
 		$idtabs = array();
 		$idtabs[] = Tab::getIdFromClassName("AdminSuperAbandonedCart");
 		foreach ($idtabs as $tabid):
@@ -174,7 +176,7 @@ class superabandonedcart extends Module
 				<div class="table-responsive">';
 					
 				echo '<table class="table" >			
-				Bravo la commande vient d\'une relance panier <br/>
+				'.$this->l('Bravo la commande vient d\'une relance panier').' <br/>
 				Numéro de campagne : <b>'.$voucher['id_campaign'].'</b/>
 				</table>
 				</div></div>';

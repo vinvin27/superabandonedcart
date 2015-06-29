@@ -1,13 +1,11 @@
 <?php
-	@ini_set('display_errors', 'on');
-	@error_reporting(E_ALL | E_STRICT);
-
 
 include(dirname(__FILE__).'/../../config/config.inc.php');
 include(_PS_ROOT_DIR_.'/init.php');
 include_once(dirname(__FILE__).'/classes/Campaign.php');
 include_once(dirname(__FILE__).'/classes/CampaignHistory.php');
 
+// Check security key
 if ( Tools::getValue('secure_key') != Configuration::get('SUPER_AC_SECURE_KEY') )
 	die('NOSECUREKEY');
 
@@ -49,6 +47,8 @@ class LaunchCampaign
 		// loop on all abandoned carts
 		foreach( $abandoned_carts as $abncart ) {
 
+
+			$emailsSent = 0;
 			// loop on all available campaigns 
 			foreach( $allCampaigns as $camp ) {
 			
@@ -118,7 +118,7 @@ class LaunchCampaign
 					$path = _PS_ROOT_DIR_.'/modules/superabandonedcart/mails/';
 					// send email to customer : 
 					
-					Mail::Send(
+					$mailUser = Mail::Send(
 								$id_lang ,
 								$campM->getFileName() ,
 								$camp['name'] , 
@@ -132,6 +132,9 @@ class LaunchCampaign
 								$path,
 								false, Context::getContext()->shop->id);
 
+					// if mail user is successfully sent : 
+					
+					if( $mailUser ) {
 						
 						$history = new CampaignHistory();
 						$history->id_campaign= (int)$camp['id_campaign'];
@@ -143,9 +146,9 @@ class LaunchCampaign
 						$history->date_update = date('Y-m-d H:i:s', time());
 						$history->save();
 					
-					// Email to admin :
+						// Email to admin :
 					
-					Mail::Send(
+						Mail::Send(
 							$id_lang ,
 							$campM->getFileName() ,
 							Mail::l( sprintf('Email sent to %s %s for campaign %s' , $customer->lastname , $customer->firstname , $camp['name'] )) , 
@@ -160,9 +163,18 @@ class LaunchCampaign
 							false, Context::getContext()->shop->id
 						); 	
 						
+						++$emailsSent;
 						
-					//	echo 'ID ' . $abncart['id_cart'];
+			
+					}
+					else {
+						PrestaShopLogger::addLog( 'Error when sending user email (tpl:'.$campM->getFileName().',customer:'.$customer->email.', campagne : '.$camp['name'] , 3 );
+					}
 				}
+			}
+			// log emailing results : 
+			if( $emailsSent > 0 ) {
+				PrestaShopLogger::addLog( $emailsSent . ' emails sent for '.$camp['name'] . ' campaign' , 1 );
 			}
 
 		}	

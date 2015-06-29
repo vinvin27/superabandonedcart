@@ -10,7 +10,6 @@ class AdminSuperAbandonedCartController extends AdminController {
         $this->className = 'Campaign';
         $this->module = 'superabandonedcart';
         $this->lang = false;
-        //$this->image_dir = '../modules/categoriesbanner/images';
         $this->context = Context::getContext();
         $this->_defaultOrderBy = 'created';
         $this->_defaultorderWay = 'DESC';
@@ -82,7 +81,7 @@ class AdminSuperAbandonedCartController extends AdminController {
         $this->addRowAction('edit');
         $this->addRowAction('delete');
         
-        $cron_url = $this->getBaseURL().'/modules/superabandonedcart/launch_campaings.php?secure_key='.Configuration::get('SUPER_AC_SECURE_KEY');;
+        $cron_url = $this->getBaseURL().'modules/superabandonedcart/launch_campaings.php?secure_key='.Configuration::get('SUPER_AC_SECURE_KEY');;
         
         $header  = '<div class="alert alert-info">
         				<p>  '. $this->l('Don\'t forget to set cron task :') .' </p>
