@@ -103,6 +103,7 @@ class superabandonedcart extends Module
 	{
 		$idtabs = array();
 		$idtabs[] = Tab::getIdFromClassName("AdminSuperAbandonedCart");
+		$idtabs[] = Tab::getIdFromClassName("AdminSuperAbandonedCartStats");
 		foreach ($idtabs as $tabid):
 			if ($tabid) {
 				$tab = new Tab($tabid);
@@ -122,15 +123,44 @@ class superabandonedcart extends Module
 	{
         $langs = Language::getLanguages();
         $id_lang = (int) Configuration::get('PS_LANG_DEFAULT');
+        
+        
         $smarttab = new Tab();
         $smarttab->class_name = "AdminSuperAbandonedCart";
-        $smarttab->module = "superabandonedcart";
+        $smarttab->module = "";
         $smarttab->id_parent = 0;
         foreach ($langs as $l) {
             $smarttab->name[$l['id_lang']] = $this->l('Super Abandoned Cart');
         }
         $smarttab->save();
         $tab_id = $smarttab->id;
+      
+      	// create child tab :
+      	$tabvalue = array(
+      	
+      		array( 
+      			'class_name' => 'AdminSuperAbandonedCart',
+      			'name' =>  $this->l('Campaign'),
+      			'module' => 'superabandonedcart'	
+      		),
+      		// tab stats :
+      		array( 
+      			'class_name' => 'AdminSuperAbandonedCartStats',
+      			'name' =>  $this->l('Stats'),
+      			'module' => 'superabandonedcart'	
+      		)
+      	
+      	);
+      	foreach ($tabvalue as $tab) {
+            $newtab = new Tab();
+            $newtab->class_name = $tab['class_name'];
+            $newtab->id_parent = $tab_id;
+            $newtab->module = $tab['module'];
+            foreach ($langs as $l) {
+                $newtab->name[$l['id_lang']] = $this->l($tab['name']);
+            }
+            $newtab->save();
+        }
       
         return true;
     }

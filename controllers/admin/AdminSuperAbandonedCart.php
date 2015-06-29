@@ -4,6 +4,7 @@ require_once (dirname(__FILE__) . '/../../classes/CampaignHistory.php');
 
 class AdminSuperAbandonedCartController extends AdminController {
 
+	public  $messageHeader;
 
   public function __construct() {
       
@@ -84,7 +85,8 @@ class AdminSuperAbandonedCartController extends AdminController {
         
         $cron_url = $this->getBaseURL().'modules/superabandonedcart/launch_campaings.php?secure_key='.Configuration::get('SUPER_AC_SECURE_KEY');;
         
-        $header  = '<div class="alert alert-info">
+        $header  = $this->messageHeader.
+        		 '<div class="alert alert-info">
         				<p>  '. $this->l('Don\'t forget to set cron task :') .' </p>
         				<p><b> */30 * * * * wget -O /dev/null '.$cron_url.'</b></p>	
         				<br/>
@@ -92,7 +94,7 @@ class AdminSuperAbandonedCartController extends AdminController {
         				
         				
         			</div>';
-        return $header . parent::renderList() . $this->renderHistoryList();
+        return $header . parent::renderList() .  $this->renderManualSender();
     }
 	
 	public function initToolbar() {
@@ -290,6 +292,12 @@ class AdminSuperAbandonedCartController extends AdminController {
         	
         }
         
+        
+        
+       
+         		
+        
+        
         return $extra . parent::renderForm();
     }
     
@@ -323,40 +331,45 @@ class AdminSuperAbandonedCartController extends AdminController {
 				$campaign->email_tpl = Tools::getValue('email_tpl');
 				$campaign->execution_time_day = Tools::getValue('execution_time_day');
 				$campaign->execution_time_hour = Tools::getValue('execution_time_hour');
-				$campaign->voucher_prefix = Tools::getValue('voucher_prefix');
-				$campaign->voucher_amount = Tools::getValue('voucher_amount');
-				$campaign->voucher_amount_type = Tools::getValue('voucher_amount_type');
-				$campaign->voucher_day = Tools::getValue('voucher_day');
 				
+				// If voucher active :				
+				if ( Tools::getValue('include_voucher') == 1 ) {				
+
+					$campaign->voucher_prefix = Tools::getValue('voucher_prefix');
+					$campaign->voucher_amount = Tools::getValue('voucher_amount');
+					$campaign->voucher_amount_type = Tools::getValue('voucher_amount_type');
+					$campaign->voucher_day = Tools::getValue('voucher_day');
+				
+				}
+				else{
+					
+					$campaign->voucher_prefix = '';
+					$campaign->voucher_amount = '';
+					$campaign->voucher_amount_type = '';
+					$campaign->voucher_day = '';
+				
+				}
 				
 				$campaign->active = Tools::getValue('active');
 				
 				// Create email files :
-				$path = _PS_ROOT_DIR_.'/modules/superabandonedcart/mails/'.$defaultLanguage->iso_code.'/';
+				$path = $campaign->mailPath.$defaultLanguage->iso_code.'/';
+				
 				if( !file_exists( $path ) ){
 					if( !mkdir( $path , 0777 , true ) ){ 
 						 $this->errors[] = Tools::displayError('Mails directory could not be created. Please check system permissions');
 					}
 				}
 				
-				
-				$tpl_file_name = $campaign->getFileName('html');
-    			
 				// create html files
-				$f = fopen($path.$tpl_file_name, 'w');
-
-				fwrite($f, $campaign->email_tpl);
-				fwrite($f, PHP_EOL);
-				fclose($f);
-				
-				$tpl_file_name = $campaign->getFileName('txt');
+				$tpl_file_name = $campaign->getFileName('html');
+    			$this->writeMail($path.$tpl_file_name,$campaign->email_tpl);
+    			
+    			
 				// create txt files
-				$f = fopen($path.$tpl_file_name, 'w');
-
-				fwrite($f, strip_tags($campaign->email_tpl) );
-				fwrite($f, PHP_EOL);
-				fclose($f);
-				
+				$tpl_file_name = $campaign->getFileName('txt');
+				$this->writeMail($path.$tpl_file_name,$campaign->email_tpl);
+    			
                 if (!$campaign->save()){
                     $this->errors[] = Tools::displayError('An error has occurred: Can\'t save the current object');
                 }
@@ -374,37 +387,45 @@ class AdminSuperAbandonedCartController extends AdminController {
 				$campaign->email_tpl = Tools::getValue('email_tpl');
 				$campaign->execution_time_day = Tools::getValue('execution_time_day');
 				$campaign->execution_time_hour = Tools::getValue('execution_time_hour');
-				$campaign->voucher_prefix = Tools::getValue('voucher_prefix');
-				$campaign->voucher_amount = Tools::getValue('voucher_amount');
-				$campaign->voucher_amount_type = Tools::getValue('voucher_amount_type');
-				$campaign->voucher_day = Tools::getValue('voucher_day');
+
+
+				// If voucher active :				
+				if ( Tools::getValue('include_voucher') == 1 ) {				
+
+					$campaign->voucher_prefix = Tools::getValue('voucher_prefix');
+					$campaign->voucher_amount = Tools::getValue('voucher_amount');
+					$campaign->voucher_amount_type = Tools::getValue('voucher_amount_type');
+					$campaign->voucher_day = Tools::getValue('voucher_day');
 				
+				}
+				else{
+					
+					$campaign->voucher_prefix = '';
+					$campaign->voucher_amount = '';
+					$campaign->voucher_amount_type = '';
+					$campaign->voucher_day = '';
+				
+				}
 				
 				$campaign->active = Tools::getValue('active');
 				
-				$path = _PS_ROOT_DIR_.'/modules/superabandonedcart/mails/'.$defaultLanguage->iso_code.'/';
+				$path = $campaign->mailPath.$defaultLanguage->iso_code.'/';
 				if( !file_exists( $path ) ){
 					if( !mkdir( $path , 0777 , true ) ){ 
 						 $this->errors[] = Tools::displayError('Mails directory could not be created. Please check system permissions');
 					}
 				}
-				$tpl_file_name = $campaign->getFileName('html');
-    			
+				
+				
 				// create html files
-				$f = fopen($path.$tpl_file_name, 'w');
-
-				fwrite($f, $campaign->email_tpl);
-				fwrite($f, PHP_EOL);
-				fclose($f);
+				$tpl_file_name = $campaign->getFileName('html');
+    			$this->writeMail($path.$tpl_file_name,$campaign->email_tpl);
 				
-				$tpl_file_name = $campaign->getFileName('txt');
+				
 				// create txt files
-				$f = fopen($path.$tpl_file_name, 'w');
-
-				fwrite($f, strip_tags($campaign->email_tpl) );
-				fwrite($f, PHP_EOL);
-				fclose($f);
-				
+				$tpl_file_name = $campaign->getFileName('txt');
+				$this->writeMail($path.$tpl_file_name,$campaign->email_tpl);
+			
 				
 				
 				if (!$campaign->save()){
@@ -470,8 +491,202 @@ class AdminSuperAbandonedCartController extends AdminController {
         	}
         
         }
+        
+        
+        
+    // MANUAL CAMPAIGN
+   if( Tools::isSubmit('sendCampaing') ){
+	
+		$idCamp = Tools::getValue('selectCampaign');
+		$customers = Tools::getValue('sendEmailTo');	
+		$extraMails = preg_split('/\s*,\s*/', trim(Tools::getValue('extra_mail'))); 
+		
+		// Check input :
+		if( empty( $idCamp ) ){ 	 
+			$this->errors[] = Tools::displayError('Please select a campaign');
+		}
+		if(empty($customers) ) {
+			$customers = array();
+		}
+		if( empty($extraMails) &&  empty($customers) ) {
+			$this->errors[] = Tools::displayError('Please enter or select one email adress');
+		}
+		
+		
+		// No error : 
+		if( empty( $this->errors ) ){
+		
+			// merde arrays customer and extra mail :
+			if( is_array($extraMails) ){
+				$allMails = array_merge($customers,$extraMails);
+			}
+			else{ $allMails = $customers; }
+			
+			$success = array();
+			
+			foreach ( $allMails as $mail ){		
+				
+				if( empty($mail)) { return; }
+				
+				
+				// Valide email ?
+				if ( !Validate::isEmail( $mail ) ){ 
+				 	$error[] = $this->l( sprintf( 'This email address is not valid : %s' , $mail )  );
+				 	continue;
+				}			
+				
+				$campaign = new Campaign($idCamp);
+				$id_lang = (int) Configuration::get('PS_LANG_DEFAULT');
+				$tpl_vars = array();
+				$customerData = Customer::getCustomersByEmail($mail);
+				
+				// Replace variables if is extra mail :
+				if( isset($customerData[0]['firstname']) AND  isset($customerData[0]['lastname'])) {
+					
+					$tpl_vars['{firstname}'] = $customerData[0]['firstname'];
+					$tpl_vars['{lastname}'] = $customerData[0]['lastname'];
+ 
+				}
+				else{
+					$tpl_vars['{firstname}'] = '';
+					$tpl_vars['{lastname}'] = '';
+				}
+				//d($customerData);
+				
+				if( $campaign->voucher_amount && $campaign->voucher_day && $campaign->voucher_amount_type ) {
+						$campaign->clean_old_reduction($campaign->voucher_prefix);
+						
+						// Registed customer or extra mail ?
+						if( isset($customerData[0]['id_customer']) ){
+						
+							$customerVoucher = $campaign->registerDiscount($customerData[0]['id_customer'],$campaign->voucher_amount ,$campaign->voucher_day,$campaign->voucher_amount_type,$campaign->voucher_prefix);
+						}
+						else{
+							$customerVoucher = $campaign->registerDiscount($mail,$campaign->voucher_amount ,$campaign->voucher_day,$campaign->voucher_amount_type,$campaign->voucher_prefix);
+						}
+						
+						if( $customerVoucher != false ){
+							
+							$tpl_vars['{coupon_name}'] = $customerVoucher->name;
+							$tpl_vars['{coupon_code}'] = $customerVoucher->code;
+							$tpl_vars['{coupon_value}'] = ( $campaign->voucher_amount_type == 'percent' ? $customerVoucher->reduction_percent.'%' :  Tools::displayprice($customerVoucher->reduction_amount) );
+							$tpl_vars['{coupon_valid_to}'] = date('d/m/Y',strtotime( $customerVoucher->date_to ));
+						}
+						else{
+							PrestaShopLogger::addLog( 'Error during created voucher to : '. $name . ' campaing  : ' . $campaign->name  , 3 );
+						}
+				
+					
+				}
+				else{
+							// blank value if email tpl is empty
+							$tpl_vars['{coupon_name}'] = '';
+							$tpl_vars['{coupon_code}'] = '';
+							$tpl_vars['{coupon_value}'] ='';
+							$tpl_vars['{coupon_valid_to}'] = '';
+			
+				}
+			
+				
+				
+				$ret = Mail::Send(
+							$id_lang ,
+							$campaign->getFileName() ,
+							$campaign->name , 
+							$tpl_vars ,
+							$mail ,
+							null,
+							null,
+							null,
+							null,
+							null,
+							$campaign->mailPath,
+							false,
+							Context::getContext()->shop->id
+						);
+				 
+				 if( $ret ){
+				 	
+					$history = new CampaignHistory();
+					$history->id_campaign= (int) $campaign->id_campaign;
+					$history->id_customer = ( isset($customerData[0]['id_customer']) ? ($customerData[0]['id_customer']) : 0 );
+					$history->id_cart = 0;
+					$history->id_cart_rule = ( isset($customerVoucher->id) ? $customerVoucher->id : 0);
+					$history->click = 0;
+					$history->converted = 0;
+					$history->date_update = date('Y-m-d H:i:s', time());
+					$history->save();
+					
+					
+				 	$success[] = $this->l( sprintf( 'Campagne '. $campaign->name.' successfully sent to : %s' , $mail )  );
+				 		// Email to admin :
+					Mail::Send(
+						$id_lang ,
+						$campaign->getFileName() ,
+						Mail::l( sprintf('Email sent to %s for campaign %s' , $mail , $campaign->name  )) , 
+						$tpl_vars ,
+						Configuration::get('PS_SHOP_EMAIL') ,
+						null,
+						null,
+						null,
+						null,
+						null,
+						$campaign->mailPath,
+						false, Context::getContext()->shop->id
+					); 		
+				 }
+				 else{
+				 	PrestaShopLogger::addLog( 'Error during sending email to : '. $name . ' campagne  : ' . $campaign->name  , 3 );
+				 }
+			}
+				
+		}
+		
+		
+		
+		// success ? Show it :
+		if( !empty( $success ) ){
+			
+			  $header  = '
+		  <div class="alert alert-success"><ul>';
+		   foreach( $success as $suc ){
+				  $header  .= '<li>'.$suc.'</li>';
+		   }
+		  $header  .= '</ul></div>';
+			$this->messageHeader  .= $header;
+		}
+		
+		//error Message :
+		if( !empty( $error ) ){
+			
+			  $header  = '
+		  <div class="alert alert-danger"><ul>';
+		   foreach( $error as $err ){
+				  $header  .= '<li>'.$err.'</li>';
+		   }
+		  $header  .= '</ul></div>';
+			$this->messageHeader  .= $header;
+		}
+		
+	}
+        
+        
+        
 	}
 	
+	
+	public function writeMail($path,$content){
+
+		if( !$content ) { return; }
+		
+		$f = fopen($path, 'w');
+
+		fwrite($f, $content);
+		fwrite($f, PHP_EOL);
+		fclose($f);
+		
+	
+	}
 	public function renderHistoryList()
 	{
 		
@@ -528,6 +743,66 @@ class AdminSuperAbandonedCartController extends AdminController {
 			),
 		);
 	}
+	
+	public function renderManualSender(){
+	
+		 // SEND CAMPAING MANUALLY 
+              
+        $sql = 'SELECT id_campaign,name FROM '. _DB_PREFIX_.'campaign';       
+        $campagnes = Db::getInstance()->ExecuteS($sql);
+		$step2 = '<form method="post" action="" class="form-horizontal clearfix" id="form-customersemailsender_campaign">
+        					<div class="panel col-lg-12">
+								<div class="panel-heading">
+									Emails Campaigns 
+								</div> <!-- panel-heading -->';
+			if ( !empty( $campagnes ) ){
+        	
+        	
+        	// Get campaign 		
+        	$step2 .= '
+        	<label for="selectCampaign"> ' . $this->l('Select the campaign : ') .'</label>
+        	<select name="selectCampaign">';
+        	foreach( $campagnes as $camp ){
+        		
+        			$step2 .= '<option value="'.$camp['id_campaign'].'">'.$camp['name'].'</option>';
+        			
+        	}
+        	$step2 .= '</select>';
+        	
+        	// get Customer 
+        	$customers = Customer::getCustomers();
+        	$step2 .= '<br />
+        	<label for="sendEmailTo"> ' . $this->l('Select the campaign (Use ctrl to multiple selection) : ') .'</label>
+        	<select multiple name="sendEmailTo[]">';
+        	foreach( $customers as $cust ){
+        		
+        			$step2 .= '<option value="'.$cust['email'].'">'.$cust['firstname'].' - '.$cust['firstname']. ' ('.$cust['email'] .')</option>';
+        			
+        	}
+        	$step2 .= '</select>';
+        	
+        	// add extra email : 
+        	$step2 .= '<br />
+        	<label for="extra_mail"> ' . $this->l('Add extra emails adress (separate each by comma) : ') .'</label>
+        	<input type="text" name="extra_mail">
+        	
+        	<br/>
+        	<input type="submit" class="btn btn-default" value="'.$this->l('Send campaign').'" name="sendCampaing">';
+        
+        }
+        else{
+        	$step2 .= ' <div class="alert alert-info"> ' . $this->l('Create at least one campaign to send manually emails') . '</div>';
+        }
+        
+        	
+		$step2 .= '</div>  <!-- panel -->	
+		</form> <!-- ENDOFFORM -->';
+        
+        
+        return $step2;
+	
+	}
+	
 	
 	// Récupère aussi le dossier si le Shop est dedans
 	public function getBaseURL()
