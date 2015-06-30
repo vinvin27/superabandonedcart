@@ -316,6 +316,28 @@ class AdminSuperAbandonedCartStatsController extends AdminController {
 		$helper->token = Tools::getAdminTokenLite('AdminSuperAbandonedCart');
 		$helper->currentIndex = AdminController::$currentIndex;
 
+		$sql = 'SELECT SUM(click) as click,id_campaign FROM ps_campaign_history GROUP BY id_campaign';
+		$res = Db::getInstance()->ExecuteS($sql);
+		//d($res);
+		$i=0; $label = $data = '';
+		$t = count($res);
+		foreach($res as $r){
+			
+			$campaign = new Campaign( $r['id_campaign'] );
+			
+		
+			$label .=  '"'.$campaign->name.'"'. ( $i<$t-1 ? ',' : '' ) ;
+			
+			$data .= '"'.$r['click'] .'"'. ( $i<$t-1 ? ',' : '' ) ;
+			$i++;
+		}
+		$this->context->smarty->assign( array(
+											'data' => $data,
+											'label' => $label
+											));
+		
+
+		return $this->context->smarty->fetch(dirname(__FILE__).'/../../stats.tpl');
 
 		return $helper->generateList($historyList, $fields_list);
 	}

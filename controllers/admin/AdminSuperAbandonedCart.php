@@ -179,7 +179,7 @@ class AdminSuperAbandonedCartController extends AdminController {
                     'class' => 'rte',
                     'autoload_rte' => true,
                     'required' => true,
-					'desc' => $this->l('Available variables : {firstname} , {lastname} , {coupon_name} , {coupon_code} , {coupon_value} , {coupon_valid_to} , {campaign_name}, {cart_content} , {track_url} , {track_request}')
+					'desc' => $this->l('Available variables : {firstname} , {lastname} , {coupon_name} , {coupon_code} , {coupon_value} , {coupon_valid_to} , {campaign_name}, {cart_content} , {track_url} , {track_request}, {order_link}, {shop_logo} , {shop_url}')
                 ),
                 array(
                     'type' => 'radio',

@@ -75,7 +75,8 @@ class LaunchCampaign
 						'{lastname}' => $customer->lastname,
 						'{campaign_name}' => $camp['name'],
 						'{track_url}' => $this->getBaseURL().'?id_cart='.(int)$abncart['id_cart'].'&id_customer='.(int)$abncart['id_customer'],
-						'{track_request}' => '?id_cart='.(int)$abncart['id_cart'].'&id_customer='.(int)$abncart['id_customer']
+						'{track_request}' => '?id_cart='.(int)$abncart['id_cart'].'&id_customer='.(int)$abncart['id_customer'],
+						'{order_link}' => Context::getContext()->link->getPageLink('order', false, (int)$cart->id_lang, 'step=3&recover_cart='.(int)$cart->id.'&token_cart='.md5(_COOKIE_KEY_.'recover_cart_'.(int)$cart->id))
 					);
 				
 					$campM = new Campaign($camp['id_campaign']);			
@@ -164,7 +165,7 @@ class LaunchCampaign
 							null,
 							null,
 							null,
-							$campaign->mailPath,
+							$campM->mailPath,
 							false, Context::getContext()->shop->id
 						); 	
 						
@@ -201,6 +202,7 @@ class LaunchCampaign
 		
 		// Abandoned cart date + Campaign Days and Hours
 		$time = strtotime( $abndate . ' + '.$days.' Days + '.$hours.' hours' );
+		//d($time);
 		$gAbnDate = date('Y-m-d H:i:00',$time);
 		
 		// Now time ( cron should be fired every 30minutes (e.g : at 2 or 2:30 or 3 or 3:30...) so
