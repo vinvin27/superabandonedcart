@@ -16,6 +16,8 @@ class Campaign extends ObjectModel {
 	public $voucher_day;
 	public $voucher_amount_type;
 	public $voucher_amount;	
+	public $is_abn_campaign;
+	
 	
 	public $mailPath;
 	
@@ -29,6 +31,9 @@ class Campaign extends ObjectModel {
 		'fields' => array(
 			'id_campaign' => array(
 				'type' => ObjectModel::TYPE_INT				
+			),
+			'is_abn_campaign' => array(
+				'type' => ObjectModel::TYPE_INT
 			),
 			'name' => array(
 				'type' => ObjectModel::TYPE_STRING,
@@ -151,7 +156,12 @@ class Campaign extends ObjectModel {
 	}	
 	
 	
-	
+	public function getBaseURL()
+    {
+		
+		$this->context = Context::getContext(); 
+		return (Configuration::get('PS_SSL_ENABLED') ? 'https://' : 'http://').$this->context->shop->domain.$this->context->shop->getBaseURI();
+    }
 	
 	
 	

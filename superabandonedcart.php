@@ -35,7 +35,7 @@ class superabandonedcart extends Module
 	{
 		$this->name = 'superabandonedcart';
 		$this->tab = 'checkout';
-		$this->version = '1.1.5';
+		$this->version = '2.0.1';
 		$this->author = 'Vince';
 		$this->need_instance = 0;
 		$this->bootstrap = true;
@@ -85,6 +85,11 @@ class superabandonedcart extends Module
 				';
 		
 		Db::getInstance()->Execute($sql);
+		
+		
+		// Alert table : V.2.0.1 (Is abn campaing ?)
+		Db::getInstance()->Execute('ALTER TABLE   `'._DB_PREFIX_.'campaign` ADD  `is_abn_campaign` BOOLEAN NOT NULL AFTER  `execution_time_hour`');
+		
 		
 		$this->CreateTabs();
 		

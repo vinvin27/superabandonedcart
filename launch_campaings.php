@@ -1,6 +1,6 @@
 <?php
 // Set true for debug $days = 0 
-define('DEBUG_SAC',false);
+define('DEBUG_SAC',true);
 
 include(dirname(__FILE__).'/../../config/config.inc.php');
 include(_PS_ROOT_DIR_.'/init.php');
@@ -39,7 +39,7 @@ class LaunchCampaign
 		$abandoned_carts = Db::getInstance()->ExecuteS($sql);
 		// get all available campaigns  
 
-		$sqlCampaigns = 'SELECT * FROM `'._DB_PREFIX_.'campaign` WHERE active=1';
+		$sqlCampaigns = 'SELECT * FROM `'._DB_PREFIX_.'campaign` WHERE active=1 AND is_abn_campaign=1';
 
 		$allCampaigns = Db::getInstance()->ExecuteS($sqlCampaigns);
 
@@ -111,7 +111,7 @@ class LaunchCampaign
 					
 						$link = new Link();
 						$cart_content .= '<tr>
-											<td align="center" ><img src="'.Tools::getShopProtocol().$link->getImageLink($p->link_rewrite,$images[0]['id_image']).'" width="80"/></td>
+											<td align="center" >'. ( isset($images[0]) ? '<img src="'.Tools::getShopProtocol().$link->getImageLink($p->link_rewrite,$images[0]['id_image']).'" width="80"/>' : '' ).'</td>
 											<td align="center" ><a href="'.$link->getProductLink($p).'?id_cart='.(int)$abncart['id_cart'].'&id_customer='.(int)$abncart['id_customer'].'"/>'.$p->name.'</a></td>
 											<td align="center" >'.Tools::displayprice($price_no_tax).'</td>
 											<td align="center" >'.$prod['cart_quantity'].'</td>
@@ -199,14 +199,12 @@ class LaunchCampaign
 	public function checkIfCartIsOnCampaign( $abndate , $days , $hours )
 	{	
 		
-		// Set days = 0 for debug
-		if( DEBUG_SAC )
-			$days = 0;
 		
 		// Abandoned cart date + Campaign Days and Hours
+		
 		$time = strtotime( $abndate . ' + '.$days.' Days + '.$hours.' hours' );
-		//d($time);
-		$gAbnDate = date('Y-m-d H:i:00',$time);
+		if( !isset ( $time ) ) { return false; }
+	 	$gAbnDate = date('Y-m-d H:i:00',$time);
 		
 		// Now time ( cron should be fired every 30minutes (e.g : at 2 or 2:30 or 3 or 3:30...) so
 		// for 0 min check last 29mins (from 0 to 31mins) and for 30 check last 29mins (from 30 to 01);

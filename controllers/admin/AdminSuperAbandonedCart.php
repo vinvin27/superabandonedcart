@@ -136,6 +136,25 @@ class AdminSuperAbandonedCartController extends AdminController {
                 'title' => $this->l('Create new campaign'),
             ),
             'input' => array(
+           		array(
+                    'type' => 'radio',
+                    'label' => $this->l('Is it an automatic campaign ?'),
+                    'name' => 'is_abn_campaign',
+                    'class' => 't',
+                    'is_bool' => true,
+                    'values' => array(
+                        array(
+                            'id' => 'is_abandoned_campaign',
+                            'value' => 1,
+                            'label' => $this->l('Yes')
+                        ),
+                        array(
+                            'id' => 'is_abandoned_campaign',
+                            'value' => 0,
+                            'label' => $this->l('No')
+                        )
+                    )
+                ),
             	array(
                     'type' => 'text',
                     'label' => $this->l('Campaign name : '),
@@ -290,20 +309,17 @@ class AdminSuperAbandonedCartController extends AdminController {
         	}
         	
         	
-        }
+        } 
         
-        
-        
-       
-         		
-        
-        
-        return $extra . parent::renderForm();
+        return $extra .  parent::renderForm();
     }
     
     
     
  	public function postProcess() {
+ 	
+ 	
+ 		//d($_POST['email_tpl']);
  	
  		//ADD
         if (Tools::isSubmit('submitAddcampaign')) {
@@ -314,6 +330,10 @@ class AdminSuperAbandonedCartController extends AdminController {
             if (count($this->errors))
                 return false;
            
+           
+           
+           
+          
             // ADD WAY
             if ( ( !$id_campaign = (int) Tools::getValue('id_campaign') ) && empty($this->errors) ) 
 			{
@@ -331,6 +351,8 @@ class AdminSuperAbandonedCartController extends AdminController {
 				$campaign->email_tpl = Tools::getValue('email_tpl');
 				$campaign->execution_time_day = Tools::getValue('execution_time_day');
 				$campaign->execution_time_hour = Tools::getValue('execution_time_hour');
+				$campaign->is_abn_campaign = Tools::getValue('is_abn_campaign');
+				
 				
 				// If voucher active :				
 				if ( Tools::getValue('include_voucher') == 1 ) {				
@@ -387,8 +409,9 @@ class AdminSuperAbandonedCartController extends AdminController {
 				$campaign->email_tpl = Tools::getValue('email_tpl');
 				$campaign->execution_time_day = Tools::getValue('execution_time_day');
 				$campaign->execution_time_hour = Tools::getValue('execution_time_hour');
-
-
+				$campaign->is_abn_campaign = Tools::getValue('is_abn_campaign');
+//d(Tools::getValue('email_tpl'));
+			
 				// If voucher active :				
 				if ( Tools::getValue('include_voucher') == 1 ) {				
 
@@ -431,7 +454,10 @@ class AdminSuperAbandonedCartController extends AdminController {
 				if (!$campaign->save()){
                     $this->errors[] = Tools::displayError('An error has occurred: Can\'t save the current object');
                 }
-                
+                else{
+                //	Db::getInstance()->update('campaign', array( 'email_tpl' =>  htmlentities(Tools::getValue('email_tpl')) ), 'id_campaign = ' .$campaing->id_campaign );
+                }
+               // d($campaign);
             }
             
             
@@ -491,6 +517,21 @@ class AdminSuperAbandonedCartController extends AdminController {
         	}
         
         }
+        // Disable selection
+         elseif( Tools::getIsset('submitBulkdeletecampaign') && (Tools::getValue('campaignBox')) ){
+        
+        	$ids_banner_deleted = Tools::getValue('campaignBox');
+        	
+        	// remove each banner
+        	foreach( $ids_banner_deleted as $id ){
+        	
+        		$b = new Campaign($id);
+        		$b->delete();
+        		unset($b);
+        		
+        	}
+        }
+        
         
         
         
@@ -511,8 +552,7 @@ class AdminSuperAbandonedCartController extends AdminController {
 		if( empty($extraMails) &&  empty($customers) ) {
 			$this->errors[] = Tools::displayError('Please enter or select one email adress');
 		}
-		
-		
+		 
 		// No error : 
 		if( empty( $this->errors ) ){
 		
@@ -526,7 +566,7 @@ class AdminSuperAbandonedCartController extends AdminController {
 			
 			foreach ( $allMails as $mail ){		
 				
-				if( empty($mail)) { return; }
+				if( empty($mail)) { continue; }
 				
 				
 				// Valide email ?
@@ -551,7 +591,17 @@ class AdminSuperAbandonedCartController extends AdminController {
 					$tpl_vars['{firstname}'] = '';
 					$tpl_vars['{lastname}'] = '';
 				}
-				//d($customerData);
+
+				// Blank value for useless variable ( cause we are on manual campaign so may not customer/cart informations)
+				$tpl_vars = array(
+					 	'{campaign_name}' => $campaign->name,
+						'{track_url}' => '',
+						'{track_request}' => '',
+						'{order_link}' =>''
+					);
+				
+					
+					
 				
 				if( $campaign->voucher_amount && $campaign->voucher_day && $campaign->voucher_amount_type ) {
 						$campaign->clean_old_reduction($campaign->voucher_prefix);
@@ -584,13 +634,14 @@ class AdminSuperAbandonedCartController extends AdminController {
 							$tpl_vars['{coupon_code}'] = '';
 							$tpl_vars['{coupon_value}'] ='';
 							$tpl_vars['{coupon_valid_to}'] = '';
+							
 			
 				}
 			
 				
-				
+				// Send email to customer : 
 				$ret = Mail::Send(
-							$id_lang ,
+							$this->context->language->id ,
 							$campaign->getFileName() ,
 							$campaign->name , 
 							$tpl_vars ,
@@ -600,9 +651,8 @@ class AdminSuperAbandonedCartController extends AdminController {
 							null,
 							null,
 							null,
-							$campaign->mailPath,
-							false,
-							Context::getContext()->shop->id
+							$campaign->mailPath
+							
 						);
 				 
 				 if( $ret ){
@@ -668,6 +718,7 @@ class AdminSuperAbandonedCartController extends AdminController {
 			$this->messageHeader  .= $header;
 		}
 		
+	 
 	}
         
         
