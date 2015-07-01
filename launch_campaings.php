@@ -48,6 +48,9 @@ class LaunchCampaign
 		
 		// loop on all abandoned carts
 		foreach( $abandoned_carts as $abncart ) {
+			
+			
+		if( Cart::getNbProducts((int)$abncart['id_cart']) > 0  ) {	
 
 
 			$emailsSent = 0;
@@ -182,7 +185,7 @@ class LaunchCampaign
 			if( $emailsSent > 0 ) {
 				PrestaShopLogger::addLog( $emailsSent . ' emails sent for '.$camp['name'] . ' campaign' , 1 );
 			}
-
+		}
 		}	
 	}
 	
