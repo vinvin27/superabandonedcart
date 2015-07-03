@@ -316,24 +316,60 @@ class AdminSuperAbandonedCartStatsController extends AdminController {
 		$helper->token = Tools::getAdminTokenLite('AdminSuperAbandonedCart');
 		$helper->currentIndex = AdminController::$currentIndex;
 
-		$sql = 'SELECT SUM(click) as click,id_campaign FROM ps_campaign_history GROUP BY id_campaign';
+		$sql = 'SELECT  SUM(click) AS click, SUM(converted)  AS converted, COUNT(`id_customer`) AS total_camp_sent , id_campaign FROM '._DB_PREFIX_.'campaign_history GROUP BY id_campaign';
 		$res = Db::getInstance()->ExecuteS($sql);
 		//d($res);
-		$i=0; $label = $data = '';
+		$i=0; $label = $data = $converted = $total_camp_sent = '';
 		$t = count($res);
+		$convertedPie = '';
+		
+		$pieTpl = '
+		<div class="col-lg-3 clearfix">
+		<h5>%s</h5>
+		<canvas id="convertedCart_%d" width="200" height="200"></canvas>
+		<script>
+			var convertedCart_%d = document.getElementById("convertedCart_%d").getContext("2d");
+			var data = [
+				{
+					value: %d,
+					color:"#F7464A",
+					highlight: "#FF5A5E",		
+					label: "%s"
+				},
+				{
+					value: %d,
+					color:"#F7464A",
+					highlight: "#FF5A5E",		
+					label: "%s"
+				}
+			]
+			
+			var pie_%d = new Chart(convertedCart_%d).Pie(data,Chart.defaults.Pie);
+		</script></div>
+		';
+		
 		foreach($res as $r){
 			
-			$campaign = new Campaign( $r['id_campaign'] );
+			$campaign = new Campaign( $r['id_campaign'] ); 
+			$label .=  '"'.substr($campaign->name,0,18).'.."'. ( $i<$t-1 ? ',' : '' ) ;
+			$data .= ''.$r['click'] .''. ( $i<$t-1 ? ',' : '' ) ;
+			$converted .= ''.$r['converted'] .''. ( $i<$t-1 ? ',' : '' ) ;
+			$converted .= ''.$r['total_camp_sent'] .''. ( $i<$t-1 ? ',' : '' ) ;
 			
-		
-			$label .=  '"'.$campaign->name.'"'. ( $i<$t-1 ? ',' : '' ) ;
+			$convertedPie .= sprintf( $pieTpl ,$campaign->name, $r['id_campaign'], $r['id_campaign'], $r['id_campaign'] , $r['converted'] , $this->l('Converted cart') , ( $r['total_camp_sent'] - $r['converted'] ) ,  $this->l('Total mails sent') , $r['id_campaign'], $r['id_campaign'] );
 			
-			$data .= '"'.$r['click'] .'"'. ( $i<$t-1 ? ',' : '' ) ;
 			$i++;
+			
 		}
+		
+		
+		
+		
+		
 		$this->context->smarty->assign( array(
 											'data' => $data,
-											'label' => $label
+											'label' => $label,
+											'convertedPie' => $convertedPie
 											));
 		
 

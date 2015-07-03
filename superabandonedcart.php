@@ -35,7 +35,7 @@ class superabandonedcart extends Module
 	{
 		$this->name = 'superabandonedcart';
 		$this->tab = 'checkout';
-		$this->version = '2.0.1';
+		$this->version = '1.1.5';
 		$this->author = 'Vince';
 		$this->need_instance = 0;
 		$this->bootstrap = true;
@@ -88,12 +88,14 @@ class superabandonedcart extends Module
 		
 		
 		// Alert table : V.2.0.1 (Is abn campaing ?)
-		Db::getInstance()->Execute('ALTER TABLE   `'._DB_PREFIX_.'campaign` ADD  `is_abn_campaign` BOOLEAN NOT NULL AFTER  `execution_time_hour`');
-		
+		// If updated has already done ?
+		if(  ! count(Db::getInstance()->ExecuteS('SHOW COLUMNS FROM `'._DB_PREFIX_.'campaign` LIKE "is_abn_campaign"')) ){
+			Db::getInstance()->Execute('ALTER TABLE   `'._DB_PREFIX_.'campaign` ADD  `is_abn_campaign` BOOLEAN NOT NULL AFTER  `execution_time_hour`');
+		}
 		
 		$this->CreateTabs();
 		
-		if (!parent::install() || !$this->registerHook('displayBackOfficeHeader') || !$this->registerHook('displayHeader') || !$this->registerHook('displayAdminOrder') )
+		if (!parent::install() || !$this->registerHook('displayBackOfficeHeader') || !$this->registerHook('displayHeader') || !$this->registerHook('displayAdminOrder') || !$this->registerHook('actionValidateOrder')  )
 			return false;
 		return true;
 	}
@@ -107,6 +109,7 @@ class superabandonedcart extends Module
 	public function uninstall()
 	{
 		$idtabs = array();
+		$idtabs[] = Tab::getIdFromClassName("AdminSuperAbandonedCartDefault");
 		$idtabs[] = Tab::getIdFromClassName("AdminSuperAbandonedCart");
 		$idtabs[] = Tab::getIdFromClassName("AdminSuperAbandonedCartStats");
 		foreach ($idtabs as $tabid):
@@ -116,12 +119,12 @@ class superabandonedcart extends Module
 			}
         endforeach;
         
-        $sql = array('DROP table '._DB_PREFIX_.'campaign','DROP table '._DB_PREFIX_.'campaign_history','DROP table '._DB_PREFIX_.'campaign_shop');
+       /* $sql = array('DROP table '._DB_PREFIX_.'campaign','DROP table '._DB_PREFIX_.'campaign_history','DROP table '._DB_PREFIX_.'campaign_shop');
         
         foreach( $sql as $remove )
         Db::getInstance()->Execute($remove);
-        
-		return parent::uninstall() AND $this->unregisterHook('displayBackOfficeHeader') && $this->unregisterHook('displayHeader') && $this->unregisterHook('displayAdminOrder') ;
+        */
+		return parent::uninstall() AND $this->unregisterHook('displayBackOfficeHeader') && $this->unregisterHook('displayHeader') && $this->unregisterHook('displayAdminOrder') &&  $this->unregisterHook('actionValidateOrder')  ;
 	}	
 	
 	private function CreateTabs() 
@@ -131,7 +134,7 @@ class superabandonedcart extends Module
         
         
         $smarttab = new Tab();
-        $smarttab->class_name = "AdminSuperAbandonedCart";
+        $smarttab->class_name = "AdminSuperAbandonedCartDefault";
         $smarttab->module = "";
         $smarttab->id_parent = 0;
         foreach ($langs as $l) {
@@ -181,6 +184,12 @@ class superabandonedcart extends Module
 			
 		}		
 		
+	}
+	
+	public function hookActionValidateOrder($p){
+	
+		d($p);
+	
 	}
 	
 	

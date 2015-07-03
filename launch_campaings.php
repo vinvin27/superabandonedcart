@@ -1,6 +1,6 @@
 <?php
 // Set true for debug $days = 0 
-define('DEBUG_SAC',false);
+define('DEBUG_SAC',true);
 
 include(dirname(__FILE__).'/../../config/config.inc.php');
 include(_PS_ROOT_DIR_.'/init.php');
@@ -48,9 +48,6 @@ class LaunchCampaign
 		
 		// loop on all abandoned carts
 		foreach( $abandoned_carts as $abncart ) {
-			
-			
-		if( Cart::getNbProducts((int)$abncart['id_cart']) > 0  ) {	
 
 
 			$emailsSent = 0;
@@ -60,7 +57,7 @@ class LaunchCampaign
 				if( DEBUG_SAC )
 				echo 'IdCustomer : '.$abncart['id_customer'].' - IdCart : '.$abncart['id_cart'].'<br/>';
 			
-				$cartIsOnCampaign = $this->checkIfCartIsOnCampaign( $abncart['date_add'] , $camp['execution_time_day'] , $camp['execution_time_hour']);
+				$cartIsOnCampaign = $this->checkIfCartIsOnCampaign( $abncart['date_upd'] , $camp['execution_time_day'] , $camp['execution_time_hour']);
 			
 				if( $cartIsOnCampaign ){
 					
@@ -79,7 +76,7 @@ class LaunchCampaign
 						'{campaign_name}' => $camp['name'],
 						'{track_url}' => $this->getBaseURL().'?id_cart='.(int)$abncart['id_cart'].'&id_customer='.(int)$abncart['id_customer'],
 						'{track_request}' => '?id_cart='.(int)$abncart['id_cart'].'&id_customer='.(int)$abncart['id_customer'],
-						'{order_link}' => Context::getContext()->link->getPageLink('order', false, (int)$cart->id_lang, 'step=3&recover_cart='.(int)$cart->id.'&token_cart='.md5(_COOKIE_KEY_.'recover_cart_'.(int)$cart->id))
+						'{order_link}' => Context::getContext()->link->getPageLink('order', false, (int)$cart->id_lang, 'step=3&recover_cart='.(int)$cart->id.'&token_cart='.md5(_COOKIE_KEY_.'recover_cart_'.(int)$cart->id) . '&id_cart='.(int)$abncart['id_cart'].'&id_customer='.(int)$abncart['id_customer']  )
 					);
 				
 					$campM = new Campaign($camp['id_campaign']);			
@@ -185,7 +182,7 @@ class LaunchCampaign
 			if( $emailsSent > 0 ) {
 				PrestaShopLogger::addLog( $emailsSent . ' emails sent for '.$camp['name'] . ' campaign' , 1 );
 			}
-		}
+
 		}	
 	}
 	
