@@ -35,7 +35,7 @@ class superabandonedcart extends Module
 	{
 		$this->name = 'superabandonedcart';
 		$this->tab = 'checkout';
-		$this->version = '2.0.2.0';
+		$this->version = '1.1.5';
 		$this->author = 'Vince';
 		$this->need_instance = 0;
 		$this->bootstrap = true;
@@ -175,21 +175,30 @@ class superabandonedcart extends Module
 	
 	public function hookDisplayHeader()
 	{
-		
+	 
 		if( Tools::getValue('id_customer') && Tools::getValue('id_cart') )
 		{
-
 			$sql = 'UPDATE `'._DB_PREFIX_.'campaign_history` SET click = 1 WHERE id_customer = '.(int)Tools::getValue('id_customer').' AND id_cart = '.(int)Tools::getValue('id_cart').' ';
 			Db::getInstance()->Execute($sql);			
 			
-		}		
+		}	
 		
 	}
 	
+	
+	// When Order is validate update campaign history to converted cart
 	public function hookActionValidateOrder($p){
-	
-		d($p);
-	
+		
+		$id_cart = $p['cart']->id;
+		$id_customer = $p['cart']->id_customer;
+		
+		// If cart or customer doesn't not match, 0 row will be update 
+		$sql = 'UPDATE `'._DB_PREFIX_.'campaign_history` SET click = 1 , converted = 1 WHERE id_customer = '.(int)  $id_customer.' AND id_cart = '.(int) $id_cart.' ';
+		
+		Db::getInstance()->Execute($sql);
+		
+		
+		
 	}
 	
 	
