@@ -1,27 +1,11 @@
 <?php
 /*
-* 2007-2014 PrestaShop
 *
-* NOTICE OF LICENSE
+*  Super Abandoned Cart Module for Prestashop
 *
-* This source file is subject to the Academic Free License (AFL 3.0)
-* that is bundled with this package in the file LICENSE.txt.
-* It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/afl-3.0.php
-* If you did not receive a copy of the license and are unable to
-* obtain it through the world-wide-web, please send an email
-* to license@prestashop.com so we can send you a copy immediately.
+*  Gitub : https://github.com/vinvin27/superabandonedcart
+*  
 *
-* DISCLAIMER
-*
-* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
-* versions in the future. If you wish to customize PrestaShop for your
-* needs please refer to http://www.prestashop.com for more information.
-*
-*  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2014 PrestaShop SA
-*  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
-*  International Registered Trademark & Property of PrestaShop SA
 */
 if (!defined('_PS_VERSION_'))
 	exit;
@@ -35,7 +19,7 @@ class superabandonedcart extends Module
 	{
 		$this->name = 'superabandonedcart';
 		$this->tab = 'checkout';
-		$this->version = '1.1.5';
+		$this->version = '2.2.2';
 		$this->author = 'Vince';
 		$this->need_instance = 0;
 		$this->bootstrap = true;
@@ -49,7 +33,9 @@ class superabandonedcart extends Module
 	{
 		// If SECURE KEY doesn't exist  
 		if( !Configuration::get('SUPER_AC_SECURE_KEY') ) {
+			
 			Configuration::updateValue('SUPER_AC_SECURE_KEY', md5( _COOKIE_KEY_.time()));
+			
 		}
 		
 		$sql = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'campaign` (
@@ -182,9 +168,8 @@ class superabandonedcart extends Module
 			Db::getInstance()->Execute($sql);			
 			
 		}	
-		
+
 	}
-	
 	
 	// When Order is validate update campaign history to converted cart
 	public function hookActionValidateOrder($p){
@@ -196,11 +181,8 @@ class superabandonedcart extends Module
 		$sql = 'UPDATE `'._DB_PREFIX_.'campaign_history` SET click = 1 , converted = 1 WHERE id_customer = '.(int)  $id_customer.' AND id_cart = '.(int) $id_cart.' ';
 		
 		Db::getInstance()->Execute($sql);
-		
-		
-		
+
 	}
-	
 	
 	public function hookdisplayAdminOrder()
 	{
@@ -213,7 +195,7 @@ class superabandonedcart extends Module
 		if( count($order_cart_rule) > 0) {
 		
 			// Est ce on veut exatement le même numéro de panier ?
-			//AND `id_cart` = '.(int)$commande->id_cart.' 
+			// AND `id_cart` = '.(int)$commande->id_cart.' 
 			
 			$sql = 'SELECT * FROM `'._DB_PREFIX_.'campaign_history` WHERE 
 			`id_customer` = '.(int)$commande->id_customer.' 			
@@ -238,21 +220,18 @@ class superabandonedcart extends Module
 		}
 	}
 	
-
 	public function getCartContentHeader()
 	{
 		$module = new superabandonedcart();
 		return '<table width="100%">
-									<thead>
-										<tr style="background:#ddd">
-											<th>'.$module->l('Image').'</th>
-											<th>'.$module->l('Product').'</th>
-											<th>'.$module->l('Unit price').'</th>
-											<th>'.$module->l('Quantity').'</th>
-											<th>'.$module->l('Total').'</th>
-										</tr>
-									</thead>
-									';
+					<thead>
+						<tr style="background:#ddd">
+							<th>'.$module->l('Image').'</th>
+							<th>'.$module->l('Product').'</th>
+							<th>'.$module->l('Unit price').'</th>
+							<th>'.$module->l('Quantity').'</th>
+							<th>'.$module->l('Total').'</th>
+						</tr>
+					</thead>';
 	}
-	
 }
