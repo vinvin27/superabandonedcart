@@ -51,7 +51,7 @@ class CampaignHistory extends ObjectModel {
 		)
 	);
 	
-	// Override construct to link object to voucher object fields
+
 	public function __construct($id = null, $id_lang = null, $id_shop = null)
 	{
 		parent::__construct($id,$id_lang,$id_shop);	
@@ -62,8 +62,7 @@ class CampaignHistory extends ObjectModel {
 	{
 		
 		$sql  = 'SELECT * FROM `'._DB_PREFIX_.'campaign_history` ORDER BY id_campaign_history DESC';
-		return (Db::getInstance()->executeS($sql));
-		
+		return (Db::getInstance()->executeS($sql));		
 	}
 	
 }

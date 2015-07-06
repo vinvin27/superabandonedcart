@@ -125,12 +125,10 @@ class CustomersEmailCampaign extends ObjectModel {
 		$cartRule->quantity_per_user = 1;
 		$cartRule->date_from = date('Y-m-d H:i:s', time());
 		$cartRule->date_to = date('Y-m-d H:i:s', time() + 86000*$day );
-		//$cartRule->minimum_amount = ''; // Utile ?
+
 		$cartRule->minimum_amount_tax = true;
 		$cartRule->code = preg_replace("/[^A-Za-z0-9]/","",$name).'_'.strtoupper(Tools::passwdGen(6));
-		//$cartRule->code = $name;
-		// QUESTION ? 
-		// It does not work if I do not use languages but it works with the referalprogam module (Prestashop Module)
+		
 		foreach ($languages as $lang) {
 			
 			$cartRule->name[$lang['id_lang']] = $name.' Campagne :'. $campaign_name;
@@ -148,19 +146,22 @@ class CustomersEmailCampaign extends ObjectModel {
 	
 		$sql = "DELETE FROM `"._DB_PREFIX_."cart_rule` WHERE code LIKE  '".$prefix."%' AND  date_to < '".date('Y-m-d H:i:s')."' AND quantity = 1";
 	
-		if( Db::getInstance()->Execute( $sql ) )
-			
+		if( Db::getInstance()->Execute( $sql ) ) {
+
 			return true;
-		
-		else
-		
+
+		} else {
+
 			return false;	 
-	
+		}	
 	}	
 	
-	public function getCartContentHeader(){
+	public function getCartContentHeader() {
+		
 		$module = new superabandonedcart();
+		
 		return $module->getCartContentHeader();
+		
 	}
 	
 }
