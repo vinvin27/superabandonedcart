@@ -1,6 +1,6 @@
 <?php
 // Set true for debug $days = 0 
-define('DEBUG_SAC',true);
+define('DEBUG_SAC',false);
 
 include(dirname(__FILE__).'/../../config/config.inc.php');
 include(_PS_ROOT_DIR_.'/init.php');
@@ -39,7 +39,7 @@ class LaunchCampaign
 		$abandoned_carts = Db::getInstance()->ExecuteS($sql);
 		// get all available campaigns  
 
-		$sqlCampaigns = 'SELECT * FROM `'._DB_PREFIX_.'campaign` WHERE active=1 AND is_abn_campaign=1';
+		$sqlCampaigns = 'SELECT * FROM `'._DB_PREFIX_.'campaign` WHERE active=1';
 
 		$allCampaigns = Db::getInstance()->ExecuteS($sqlCampaigns);
 
@@ -48,10 +48,10 @@ class LaunchCampaign
 		
 		// loop on all abandoned carts
 		foreach( $abandoned_carts as $abncart ) {
+			
+			
+		if( Cart::getNbProducts((int)$abncart['id_cart']) > 0  ) {	
 
-
-
-			if( Cart::getNbProducts((int)$abncart['id_cart']) > 0  ) {
 
 			$emailsSent = 0;
 			// loop on all available campaigns 
@@ -60,7 +60,7 @@ class LaunchCampaign
 				if( DEBUG_SAC )
 				echo 'IdCustomer : '.$abncart['id_customer'].' - IdCart : '.$abncart['id_cart'].'<br/>';
 			
-				$cartIsOnCampaign = $this->checkIfCartIsOnCampaign( $abncart['date_upd'] , $camp['execution_time_day'] , $camp['execution_time_hour']);
+				$cartIsOnCampaign = $this->checkIfCartIsOnCampaign( $abncart['date_add'] , $camp['execution_time_day'] , $camp['execution_time_hour']);
 			
 				if( $cartIsOnCampaign ){
 					
@@ -78,8 +78,7 @@ class LaunchCampaign
 						'{lastname}' => $customer->lastname,
 						'{campaign_name}' => $camp['name'],
 						'{track_url}' => $this->getBaseURL().'?id_cart='.(int)$abncart['id_cart'].'&id_customer='.(int)$abncart['id_customer'],
-						'{track_request}' => '?id_cart='.(int)$abncart['id_cart'].'&id_customer='.(int)$abncart['id_customer'],
-						'{order_link}' => Context::getContext()->link->getPageLink('order', false, (int)$cart->id_lang, 'step=3&recover_cart='.(int)$cart->id.'&token_cart='.md5(_COOKIE_KEY_.'recover_cart_'.(int)$cart->id) . '&id_cart='.(int)$abncart['id_cart'].'&id_customer='.(int)$abncart['id_customer']  )
+						'{track_request}' => '?id_cart='.(int)$abncart['id_cart'].'&id_customer='.(int)$abncart['id_customer']
 					);
 				
 					$campM = new Campaign($camp['id_campaign']);			
@@ -111,7 +110,7 @@ class LaunchCampaign
 					
 						$link = new Link();
 						$cart_content .= '<tr>
-											<td align="center" >'. ( isset($images[0]) ? '<img src="'.Tools::getShopProtocol().$link->getImageLink($p->link_rewrite,$images[0]['id_image']).'" width="80"/>' : '' ).'</td>
+											<td align="center" ><img src="'.Tools::getShopProtocol().$link->getImageLink($p->link_rewrite,$images[0]['id_image']).'" width="80"/></td>
 											<td align="center" ><a href="'.$link->getProductLink($p).'?id_cart='.(int)$abncart['id_cart'].'&id_customer='.(int)$abncart['id_customer'].'"/>'.$p->name.'</a></td>
 											<td align="center" >'.Tools::displayprice($price_no_tax).'</td>
 											<td align="center" >'.$prod['cart_quantity'].'</td>
@@ -125,6 +124,7 @@ class LaunchCampaign
 					$tpl_vars['{cart_content}'] = $cart_content;
 
 				
+					$path = _PS_ROOT_DIR_.'/modules/superabandonedcart/mails/';
 					// send email to customer : 
 					
 					$mailUser = Mail::Send(
@@ -138,7 +138,7 @@ class LaunchCampaign
 								null,
 								null,
 								null,
-								$campM->mailPath,
+								$path,
 								false, Context::getContext()->shop->id);
 
 					// if mail user is successfully sent : 
@@ -168,7 +168,7 @@ class LaunchCampaign
 							null,
 							null,
 							null,
-							$campM->mailPath,
+							$path,
 							false, Context::getContext()->shop->id
 						); 	
 						
@@ -199,17 +199,18 @@ class LaunchCampaign
 	public function checkIfCartIsOnCampaign( $abndate , $days , $hours )
 	{	
 		
+		// Set days = 0 for debug
+		if( DEBUG_SAC )
+			$days = 0;
 		
 		// Abandoned cart date + Campaign Days and Hours
-		
 		$time = strtotime( $abndate . ' + '.$days.' Days + '.$hours.' hours' );
-		if( !isset ( $time ) ) { return false; }
-	 	$gAbnDate = date('Y-m-d H:i:00',$time);
+		$gAbnDate = date('Y-m-d H:i:0',$time);
 		
 		// Now time ( cron should be fired every 30minutes (e.g : at 2 or 2:30 or 3 or 3:30...) so
 		// for 0 min check last 29mins (from 0 to 31mins) and for 30 check last 29mins (from 30 to 01);
-		$now =  date('Y-m-d H:i:00');
-		$oldnow = date('Y-m-d H:i:00', time() - 60 * 29);
+		$now =  date('Y-m-d H:i:0');
+		$oldnow = date('Y-m-d H:i:0', time() - 60 * 29);
 	
 		// Debug 
 		/*

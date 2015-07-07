@@ -17,11 +17,8 @@ class Campaign extends ObjectModel {
 	public $voucher_amount_type;
 	public $voucher_amount;	
 	public $is_abn_campaign;
-	
-	
+		
 	public $mailPath;
-	
-	
 						
 	public static $definition = array(
 	
@@ -118,12 +115,9 @@ class Campaign extends ObjectModel {
 		$cartRule->quantity_per_user = 1;
 		$cartRule->date_from = date('Y-m-d H:i:s', time());
 		$cartRule->date_to = date('Y-m-d H:i:s', time() + 86000*$day );
-		//$cartRule->minimum_amount = ''; // Utile ?
+		//$cartRule->minimum_amount = ''; // Est ce qu'on propose un minimum de panier ?
 		$cartRule->minimum_amount_tax = true;
 		$cartRule->code = $name.'_'.strtoupper(Tools::passwdGen(6));
-		//$cartRule->code = $name;
-		// QUESTION ? 
-		// It does not work if I do not use languages but it works with the referalprogam module (Prestashop Module)
 		foreach ($languages as $lang) {
 			
 			$cartRule->name[$lang['id_lang']] = $name.' Customer ID :'.$id_customer;
@@ -145,14 +139,15 @@ class Campaign extends ObjectModel {
 	
 		$sql = "DELETE FROM `"._DB_PREFIX_."cart_rule` WHERE code LIKE  '".$prefix."%' AND  date_to < '".date('Y-m-d H:i:s')."' AND quantity = 1";
 	
-		if( Db::getInstance()->Execute( $sql ) )
+		if( Db::getInstance()->Execute( $sql ) ) {	
 			
 			return true;
 		
-		else
+		} else {
 		
 			return false;	 
 	
+		}
 	}	
 	
 	
