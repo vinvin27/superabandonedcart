@@ -199,18 +199,14 @@ class LaunchCampaign
 	public function checkIfCartIsOnCampaign( $abndate , $days , $hours )
 	{	
 		
-		// Set days = 0 for debug
-		if( DEBUG_SAC )
-			$days = 0;
-		
 		// Abandoned cart date + Campaign Days and Hours
 		$time = strtotime( $abndate . ' + '.$days.' Days + '.$hours.' hours' );
-		$gAbnDate = date('Y-m-d H:i:0',$time);
+		$gAbnDate = date('Y-m-d H:i:00',$time);
 		
 		// Now time ( cron should be fired every 30minutes (e.g : at 2 or 2:30 or 3 or 3:30...) so
 		// for 0 min check last 29mins (from 0 to 31mins) and for 30 check last 29mins (from 30 to 01);
-		$now =  date('Y-m-d H:i:0');
-		$oldnow = date('Y-m-d H:i:0', time() - 60 * 29);
+		$now =  date('Y-m-d H:i:00');
+		$oldnow = date('Y-m-d H:i:00', time() - 60 * 29);
 	
 		// Debug 
 		/*
