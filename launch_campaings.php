@@ -31,7 +31,7 @@ class LaunchCampaign
 				LEFT JOIN `"._DB_PREFIX_."connections` co ON (a.id_guest = co.id_guest AND TIME_TO_SEC(TIMEDIFF('".date('Y-m-d H:i:s')."', co.`date_add`)) < 1800)
 				WHERE a.date_add > (NOW() - INTERVAL 60 DAY) ORDER BY a.id_cart DESC 
 		) AS toto WHERE id_order='Abandoned cart'";
-
+	
 		$currency = Context::getContext()->currency->sign;
 		$defaultLanguage = new Language((int)(Configuration::get('PS_LANG_DEFAULT')));
 				
@@ -77,7 +77,7 @@ class LaunchCampaign
 						'{firstname}' => $customer->firstname,
 						'{lastname}' => $customer->lastname,
 						'{campaign_name}' => $camp['name'],
-						'{order_link}' => $this->context->link->getPageLink( 'order', false,  (int)Context::getContext()->cart->id_lang,'step=3&recover_cart='.(int)$abncart['id_cart'].'&token_cart='.md5(_COOKIE_KEY_.'recover_cart_'.(int)$abncart['id_cart']).'?id_cart='.(int)$abncart['id_cart'].'&id_customer='.(int)$abncart['id_customer']
+						'{order_link}' => $this->context->link->getPageLink( 'order', false,  (int)Context::getContext()->cart->id_lang,'step=3&recover_cart='.(int)$abncart['id_cart'].'&token_cart='.md5(_COOKIE_KEY_.'recover_cart_'.(int)$abncart['id_cart']).'?id_cart='.(int)$abncart['id_cart'].'&id_customer='.(int)$abncart['id_customer']),
 						'{track_url}' => $this->getBaseURL().'?id_cart='.(int)$abncart['id_cart'].'&id_customer='.(int)$abncart['id_customer'],
 						'{track_request}' => '?id_cart='.(int)$abncart['id_cart'].'&id_customer='.(int)$abncart['id_customer']
 					);
