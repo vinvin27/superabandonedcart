@@ -39,7 +39,7 @@ class LaunchCampaign
 		$abandoned_carts = Db::getInstance()->ExecuteS($sql);
 		// get all available campaigns  
 
-		$sqlCampaigns = 'SELECT * FROM `'._DB_PREFIX_.'campaign` WHERE active=1';
+		$sqlCampaigns = 'SELECT * FROM `'._DB_PREFIX_.'campaign` WHERE active=1 AND is_abn_campaign=1';
 
 		$allCampaigns = Db::getInstance()->ExecuteS($sqlCampaigns);
 
