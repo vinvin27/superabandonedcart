@@ -77,6 +77,7 @@ class LaunchCampaign
 						'{firstname}' => $customer->firstname,
 						'{lastname}' => $customer->lastname,
 						'{campaign_name}' => $camp['name'],
+						'{order_link}' => $this->context->link->getPageLink( 'order', false,  (int)Context::getContext()->cart->id_lang,'step=3&recover_cart='.(int)$abncart['id_cart'].'&token_cart='.md5(_COOKIE_KEY_.'recover_cart_'.(int)$abncart['id_cart']).'?id_cart='.(int)$abncart['id_cart'].'&id_customer='.(int)$abncart['id_customer']
 						'{track_url}' => $this->getBaseURL().'?id_cart='.(int)$abncart['id_cart'].'&id_customer='.(int)$abncart['id_customer'],
 						'{track_request}' => '?id_cart='.(int)$abncart['id_cart'].'&id_customer='.(int)$abncart['id_customer']
 					);
