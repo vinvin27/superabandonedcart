@@ -7,11 +7,12 @@
 *
 *
 */
-if (!defined('_PS_VERSION_'))
+if (!defined('_PS_VERSION_')) {
     exit;
+}
 
 
-require_once (dirname(__FILE__) . '/classes/Campaign.php');
+require_once(dirname(__FILE__) . '/classes/Campaign.php');
 class superabandonedcart extends Module
 {
 
@@ -32,9 +33,8 @@ class superabandonedcart extends Module
     public function install()
     {
         // If SECURE KEY doesn't exist
-        if( !Configuration::get('SUPER_AC_SECURE_KEY') ) {
-
-            Configuration::updateValue('SUPER_AC_SECURE_KEY', md5( _COOKIE_KEY_.time()));
+        if (!Configuration::get('SUPER_AC_SECURE_KEY')) {
+            Configuration::updateValue('SUPER_AC_SECURE_KEY', md5(_COOKIE_KEY_.time()));
 
         }
 
@@ -75,14 +75,15 @@ class superabandonedcart extends Module
 
         // Alert table : V.2.0.1 (Is abn campaing ?)
         // If updated has already done ?
-        if(  ! count(Db::getInstance()->ExecuteS('SHOW COLUMNS FROM `'._DB_PREFIX_.'campaign` LIKE "is_abn_campaign"')) ){
+        if (! count(Db::getInstance()->ExecuteS('SHOW COLUMNS FROM `'._DB_PREFIX_.'campaign` LIKE "is_abn_campaign"'))) {
             Db::getInstance()->Execute('ALTER TABLE   `'._DB_PREFIX_.'campaign` ADD  `is_abn_campaign` BOOLEAN NOT NULL AFTER  `execution_time_hour`');
         }
 
         $this->CreateTabs();
 
-        if (!parent::install() || !$this->registerHook('displayBackOfficeHeader') || !$this->registerHook('displayHeader') || !$this->registerHook('displayAdminOrder') || !$this->registerHook('actionValidateOrder')  )
+        if (!parent::install() || !$this->registerHook('displayBackOfficeHeader') || !$this->registerHook('displayHeader') || !$this->registerHook('displayAdminOrder') || !$this->registerHook('actionValidateOrder')) {
             return false;
+        }
         return true;
     }
 
@@ -98,7 +99,7 @@ class superabandonedcart extends Module
         $idtabs[] = Tab::getIdFromClassName("AdminSuperAbandonedCartDefault");
         $idtabs[] = Tab::getIdFromClassName("AdminSuperAbandonedCart");
         $idtabs[] = Tab::getIdFromClassName("AdminSuperAbandonedCartStats");
-        foreach ($idtabs as $tabid):
+        foreach ($idtabs as $tabid) :
             if ($tabid) {
                 $tab = new Tab($tabid);
                 $tab->delete();
@@ -110,7 +111,7 @@ class superabandonedcart extends Module
         foreach( $sql as $remove )
         Db::getInstance()->Execute($remove);
         */
-        return parent::uninstall() AND $this->unregisterHook('displayBackOfficeHeader') && $this->unregisterHook('displayHeader') && $this->unregisterHook('displayAdminOrder') &&  $this->unregisterHook('actionValidateOrder')  ;
+        return parent::uninstall() and $this->unregisterHook('displayBackOfficeHeader') && $this->unregisterHook('displayHeader') && $this->unregisterHook('displayAdminOrder') &&  $this->unregisterHook('actionValidateOrder')  ;
     }
 
     private function CreateTabs()
@@ -129,31 +130,31 @@ class superabandonedcart extends Module
         $smarttab->save();
         $tab_id = $smarttab->id;
 
-          // create child tab :
-          $tabvalue = array(
+        // create child tab :
+        $tabvalue = array(
 
-              array(
+            array(
                   'class_name' => 'AdminSuperAbandonedCart',
                   'name' =>  $this->l('Campaign'),
                   'module' => 'superabandonedcart'
-              ),
-              // tab stats :
-              array(
+            ),
+            // tab stats :
+            array(
                   'class_name' => 'AdminSuperAbandonedCartStats',
                   'name' =>  $this->l('Stats'),
                   'module' => 'superabandonedcart'
-              )
+            )
 
-          );
-          foreach ($tabvalue as $tab) {
+        );
+        foreach ($tabvalue as $tab) {
             $newtab = new Tab();
             $newtab->class_name = $tab['class_name'];
             $newtab->id_parent = $tab_id;
             $newtab->module = $tab['module'];
             foreach ($langs as $l) {
-                $newtab->name[$l['id_lang']] = $this->l($tab['name']);
+                  $newtab->name[$l['id_lang']] = $this->l($tab['name']);
             }
-            $newtab->save();
+                $newtab->save();
         }
 
         return true;
@@ -162,7 +163,7 @@ class superabandonedcart extends Module
     public function hookDisplayHeader()
     {
 
-        if( Tools::getValue('id_customer') && Tools::getValue('id_cart') ) {
+        if (Tools::getValue('id_customer') && Tools::getValue('id_cart')) {
             $sql = 'UPDATE `'._DB_PREFIX_.'campaign_history` SET click = 1 WHERE id_customer = '.(int)Tools::getValue('id_customer').' AND id_cart = '.(int)Tools::getValue('id_cart').' ';
             Db::getInstance()->Execute($sql);
 
@@ -191,8 +192,7 @@ class superabandonedcart extends Module
         $commande = new Order($id_order);
         $order_cart_rule = $commande->getCartRules();
 
-        if( count($order_cart_rule) > 0) {
-
+        if (count($order_cart_rule) > 0) {
             // Est ce on veut exatement le même numéro de panier ?
             // AND `id_cart` = '.(int)$commande->id_cart.'
 
@@ -201,8 +201,7 @@ class superabandonedcart extends Module
             AND `id_cart_rule` = '.(int)$order_cart_rule[0]['id_cart_rule'].' ';
             $voucher = Db::getInstance()->getRow($sql);
 
-            if( $voucher  ) {
-
+            if ($voucher) {
                 echo '
                 <!-- Commande en cours. -->
                 <div class="panel">
