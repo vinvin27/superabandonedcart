@@ -1,7 +1,7 @@
 <?php
 
 
-require_once (dirname(__FILE__) . '/../superabandonedcart.php');
+require_once(dirname(__FILE__) . '/../superabandonedcart.php');
 
 class CampaignHistory extends ObjectModel
 {
@@ -54,7 +54,7 @@ class CampaignHistory extends ObjectModel
 
     public function __construct($id = null, $id_lang = null, $id_shop = null)
     {
-        parent::__construct($id,$id_lang,$id_shop);
+        parent::__construct($id, $id_lang, $id_shop);
 
     }
 
@@ -64,5 +64,4 @@ class CampaignHistory extends ObjectModel
         $sql  = 'SELECT * FROM `'._DB_PREFIX_.'campaign_history` ORDER BY id_campaign_history DESC';
         return (Db::getInstance()->executeS($sql));
     }
-
 }
