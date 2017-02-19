@@ -1,6 +1,6 @@
 <?php
 // Set true for debug $days = 0
-define('DEBUG_SAC', true);
+define('DEBUG_SAC', false);
 
 include dirname(__FILE__).'/../../config/config.inc.php';
 include _PS_ROOT_DIR_.'/init.php';
