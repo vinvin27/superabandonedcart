@@ -105,12 +105,12 @@ class LaunchCampaign
 				
 						$p = new Product($prod['id_product'],true,$id_lang);
 						$price_with_tax = (Product::getPriceStatic($p->id,true,null,2,null,false,true,1,false,null,$abncart['id_cart'],null,$null,true,true,null,false,false));
-						$total_with_tax = $prod['cart_quantity'] * $price_with_tax;
-						$images = Image::getImages((int)$id_lang, (int)$p->id);
+						$total_with_tax = $prod['cart_quantity'] * $price_with_tax;						
+						$image = Image::getCover($p->id);	
 					
 						$link = new Link();
 						$cart_content .= '<tr>
-											<td align="center" ><img src="'.Tools::getShopProtocol().$link->getImageLink($p->link_rewrite,$images[0]['id_image']).'" width="80"/></td>
+											<td align="center" ><img src="'.Tools::getShopProtocol().$link->getImageLink($p->link_rewrite,$image['id_image'],'small_default').'" width="80"/></td>
 											<td align="center" ><a href="'.$link->getProductLink($p).'?id_cart='.(int)$abncart['id_cart'].'&id_customer='.(int)$abncart['id_customer'].'"/>'.$p->name.'</a></td>
 											<td align="center" >'.Tools::displayprice($price_with_tax).'</td>
 											<td align="center" >'.$prod['cart_quantity'].'</td>
